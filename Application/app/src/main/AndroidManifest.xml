@@ -9,20 +9,30 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
-
-        <activity android:name=".views.activities.MainActivity">
-        </activity>
-
+        <!-- MainActivity -->
+        <activity android:name=".views.activities.MainActivity"></activity>
+        <!-- LoginActivity -->
         <activity
             android:name=".views.activities.LoginActivity"
             android:label="@string/title_activity_login">
+
             <!-- To change the launcher activity, move the intent filter to the activity. -->
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
+
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-
+        <!-- RegisterActivity -->
+        <activity
+            android:name=".views.activities.RegisterActivity"
+            android:label="@string/title_activity_register"
+            android:parentActivityName=".views.activities.LoginActivity"
+            android:theme="@style/AppTheme.NoActionBar">
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value="com.android2.eu.proximitymap.views.activities.LoginActivity" />
+        </activity>
     </application>
 
 </manifest>

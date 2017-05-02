@@ -1,5 +1,6 @@
 package com.android2.eu.proximitymap.views.activities;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.design.widget.TextInputLayout;
 import android.support.v7.app.AppCompatActivity;
@@ -46,7 +47,9 @@ public class LoginActivity extends AppCompatActivity {
         tvCreateAccount.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                // TODO: Launch register intent.
+                Intent registerIntent = new Intent(LoginActivity.this, RegisterActivity.class);
+                startActivity(registerIntent);
+                // TODO: Stop this activity when registration is successful.
             }
         });
     }
