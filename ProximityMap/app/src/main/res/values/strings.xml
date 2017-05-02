@@ -1,4 +1,4 @@
 <resources>
-    <string name="app_name">ProximityMap</string>
-    <string name="title_activity_login">LoginActivity</string>
+    <string name="app_name">Proximity Map</string>
+    <string name="title_activity_login">Login</string>
 </resources>

@@ -47,7 +47,8 @@ public class LoginActivity extends AppCompatActivity {
                     .createSignInIntentBuilder()
                     .setProviders(Arrays.asList(
                             new AuthUI.IdpConfig.Builder(AuthUI.EMAIL_PROVIDER).build(),
-                            new AuthUI.IdpConfig.Builder(AuthUI.GOOGLE_PROVIDER).build()))
+                            new AuthUI.IdpConfig.Builder(AuthUI.GOOGLE_PROVIDER).build(),
+                            new AuthUI.IdpConfig.Builder(AuthUI.FACEBOOK_PROVIDER).build()))
                     .build(), RC_SIGN_IN);
         }
     }
