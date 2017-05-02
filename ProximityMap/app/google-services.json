@@ -1,0 +1,42 @@
+{
+  "project_info": {
+    "project_number": "634883356408",
+    "firebase_url": "https://application-4c5b9.firebaseio.com",
+    "project_id": "application-4c5b9",
+    "storage_bucket": "application-4c5b9.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:634883356408:android:2340ae40df395c61",
+        "android_client_info": {
+          "package_name": "com.android.eu.proximitymap"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "634883356408-1vnh2cgsv9q1rfbou3udvtmh73su6uon.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCvewOWGBgzybqYd6C8TKxyOEuM5ZcC9m0"
+        }
+      ],
+      "services": {
+        "analytics_service": {
+          "status": 1
+        },
+        "appinvite_service": {
+          "status": 1,
+          "other_platform_oauth_client": []
+        },
+        "ads_service": {
+          "status": 2
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
