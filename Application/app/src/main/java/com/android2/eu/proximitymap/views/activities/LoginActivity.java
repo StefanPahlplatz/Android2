@@ -1,4 +1,4 @@
-package com.android2.eu.proximitymap;
+package com.android2.eu.proximitymap.views.activities;
 
 import android.os.Bundle;
 import android.support.design.widget.TextInputLayout;
@@ -9,6 +9,9 @@ import android.view.View;
 import android.view.WindowManager;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.TextView;
+
+import com.android2.eu.proximitymap.R;
 
 /**
  * A login screen that offers login via username/password.
@@ -28,6 +31,7 @@ public class LoginActivity extends AppCompatActivity {
         inputName = (EditText) findViewById(R.id.input_name);
         inputPassword = (EditText) findViewById(R.id.input_password);
         Button btnSignUp = (Button) findViewById(R.id.btn_sign_up);
+        TextView tvCreateAccount = (TextView) findViewById(R.id.tv_create_account);
 
         inputName.addTextChangedListener(new MyTextWatcher(inputName));
         inputPassword.addTextChangedListener(new MyTextWatcher(inputPassword));
@@ -36,6 +40,13 @@ public class LoginActivity extends AppCompatActivity {
             @Override
             public void onClick(View view) {
                 submitForm();
+            }
+        });
+
+        tvCreateAccount.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                // TODO: Launch register intent.
             }
         });
     }
@@ -52,7 +63,7 @@ public class LoginActivity extends AppCompatActivity {
             return;
         }
 
-        // TODO: Handle log in process.
+        // TODO: Call to async login class to validate the credentials.
     }
 
     private boolean validateName() {

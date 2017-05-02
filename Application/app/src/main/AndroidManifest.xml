@@ -10,11 +10,11 @@
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
 
-        <activity android:name=".MainActivity">
+        <activity android:name=".views.activities.MainActivity">
         </activity>
 
         <activity
-            android:name=".LoginActivity"
+            android:name=".views.activities.LoginActivity"
             android:label="@string/title_activity_login">
             <!-- To change the launcher activity, move the intent filter to the activity. -->
             <intent-filter>

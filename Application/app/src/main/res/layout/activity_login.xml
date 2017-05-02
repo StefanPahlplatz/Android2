@@ -48,6 +48,14 @@
             android:text="@string/action_sign_in"
             android:textColor="@android:color/white" />
 
+        <TextView
+            android:id="@+id/tv_create_account"
+            android:layout_width="match_parent"
+            android:layout_margin="16dp"
+            android:layout_height="wrap_content"
+            android:text="@string/create_account"
+            android:gravity="center"/>
+
     </LinearLayout>
 
 </android.support.design.widget.CoordinatorLayout>
