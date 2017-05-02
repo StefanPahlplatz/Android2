@@ -3,7 +3,7 @@
     <string name="title_activity_login">Sign in</string>
 
     <!-- Strings related to login -->
-    <string name="prompt_username">Username</string>
+    <string name="prompt_email">Email address</string>
     <string name="action_sign_in">Sign in</string>
     <string name="error_field_required">This field is required</string>
     <string name="create_account"><u>Create a new account</u></string>
@@ -15,5 +15,7 @@
     <string name="prompt_dob">Date of Birth</string>
     <string name="prompt_first_name">First name</string>
     <string name="prompt_last_name">last name</string>
+
+    <string name="auth_failed">Authentication failed</string>
 
 </resources>

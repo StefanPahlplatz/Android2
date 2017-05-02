@@ -13,20 +13,26 @@ import android.widget.EditText;
 import android.widget.TextView;
 
 import com.android2.eu.proximitymap.R;
+import com.android2.eu.proximitymap.utils.FireBaseAuthHelper;
 
 /**
  * A login screen that offers login via username/password.
+ * TODO: reset password text.
  */
-public class LoginActivity extends AppCompatActivity {
+public class LoginActivity extends AppCompatActivity implements FireBaseAuthHelper.ResponseListener {
+    private static final String TAG = LoginActivity.class.getSimpleName();
 
     private EditText inputName, inputPassword;
     private TextInputLayout inputLayoutName, inputLayoutPassword;
+
+    private FireBaseAuthHelper authHelper;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_login);
 
+        // Assign UI components
         inputLayoutName = (TextInputLayout) findViewById(R.id.input_layout_name);
         inputLayoutPassword = (TextInputLayout) findViewById(R.id.input_layout_password);
         inputName = (EditText) findViewById(R.id.input_name);
@@ -34,6 +40,7 @@ public class LoginActivity extends AppCompatActivity {
         Button btnSignUp = (Button) findViewById(R.id.btn_sign_up);
         TextView tvCreateAccount = (TextView) findViewById(R.id.tv_create_account);
 
+        // Add text watchers to update the validation status
         inputName.addTextChangedListener(new MyTextWatcher(inputName));
         inputPassword.addTextChangedListener(new MyTextWatcher(inputPassword));
 
@@ -52,6 +59,31 @@ public class LoginActivity extends AppCompatActivity {
                 // TODO: Stop this activity when registration is successful.
             }
         });
+
+        // Create FireBase helper
+        authHelper = new FireBaseAuthHelper(this);
+    }
+
+    /**
+     * Start the MainActivity if the user is logged in.
+     * @param isLoggedIn whether the user is now logged in or not.
+     */
+    @Override
+    public void onAuthStateChanged(Boolean isLoggedIn) {
+        if (isLoggedIn) {
+            Intent mainActivity = new Intent(this, MainActivity.class);
+            startActivity(mainActivity);
+            finish();
+        }
+    }
+
+    /**
+     * Dispose the FireBase helper.
+     */
+    @Override
+    protected void onStop() {
+        super.onStop();
+        authHelper.dispose();
     }
 
     /**
@@ -66,7 +98,10 @@ public class LoginActivity extends AppCompatActivity {
             return;
         }
 
-        // TODO: Call to async login class to validate the credentials.
+        String email = inputName.getText().toString();
+        String password = inputPassword.getText().toString();
+
+        authHelper.signIn(email, password);
     }
 
     private boolean validateName() {
