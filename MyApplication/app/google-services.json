@@ -1,0 +1,55 @@
+{
+  "project_info": {
+    "project_number": "1046998140889",
+    "firebase_url": "https://myapplication-42f3a.firebaseio.com",
+    "project_id": "myapplication-42f3a",
+    "storage_bucket": "myapplication-42f3a.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:1046998140889:android:f0929bf0b1e829cd",
+        "android_client_info": {
+          "package_name": "pahlplatz.locationapp.nl.myapplication"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "1046998140889-vnf4ifn6q8f0evl9oj9f0tpaema70ur8.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "pahlplatz.locationapp.nl.myapplication",
+            "certificate_hash": "9f3898080174f6f5d431399ac0f984adf9e80e8f"
+          }
+        },
+        {
+          "client_id": "1046998140889-r9mlsr5bkg4eea71reto4796v9a50qpv.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyB6wUFwDsqJDKvoYTT5-taWDk_Xdl84quE"
+        }
+      ],
+      "services": {
+        "analytics_service": {
+          "status": 1
+        },
+        "appinvite_service": {
+          "status": 2,
+          "other_platform_oauth_client": [
+            {
+              "client_id": "1046998140889-r9mlsr5bkg4eea71reto4796v9a50qpv.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        },
+        "ads_service": {
+          "status": 2
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
