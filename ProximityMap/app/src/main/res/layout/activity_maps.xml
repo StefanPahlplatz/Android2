@@ -10,7 +10,7 @@
         android:name="com.google.android.gms.maps.SupportMapFragment"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        tools:context="com.android.eu.proximitymap.MapsActivity" />
+        tools:context="com.android.eu.proximitymap.activities.MapsActivity" />
 
     <com.ittianyu.bottomnavigationviewex.BottomNavigationViewEx
         android:id="@+id/bottom_navigation"
