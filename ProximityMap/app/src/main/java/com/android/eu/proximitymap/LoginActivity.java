@@ -42,7 +42,7 @@ public class LoginActivity extends AppCompatActivity {
         // Check if the user is signed in yet.
         if (auth.getCurrentUser() != null) {
             // User is already signed in.
-            Log.d("AUTH", auth.getCurrentUser().getEmail());
+            Log.v("AUTH", "Logged in as " + auth.getCurrentUser().getEmail());
             startMainActivity();
         } else {
             // User is not yet signed in, start the FirebaseUI intent by calling
@@ -72,8 +72,12 @@ public class LoginActivity extends AppCompatActivity {
                 if (user != null) {
                     Log.d("AUTH", auth.getCurrentUser().getEmail());
                 } else {
+                    Log.wtf("ToPkEk", "CaN't HaPpEn! ImPoSsIbLe StAte!");
                     throw new NullPointerException("User logged in but something went wrong!");
                 }
+
+                // TODO: Create new activity that asks the user for more information like profession and age, then store this in the database.
+
                 startMainActivity();
             } else {
                 // User not logged in.

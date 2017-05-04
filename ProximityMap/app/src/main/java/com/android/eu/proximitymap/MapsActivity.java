@@ -28,6 +28,10 @@ import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
 import com.ittianyu.bottomnavigationviewex.BottomNavigationViewEx;
 
 /**
@@ -49,6 +53,8 @@ public class MapsActivity extends FragmentActivity implements
     private GoogleApiClient mGoogleApiClient;
     private Marker mCurrLocationMarker;
 
+    private DatabaseReference mDatabase;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -67,6 +73,9 @@ public class MapsActivity extends FragmentActivity implements
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
             checkLocationPermission();
         }
+
+        // Write a message to the database
+        mDatabase = FirebaseDatabase.getInstance().getReference();
 
         // Obtain the SupportMapFragment and get notified when the map is ready to be used.
         SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager()
@@ -152,6 +161,15 @@ public class MapsActivity extends FragmentActivity implements
         //move map camera
         mMap.moveCamera(CameraUpdateFactory.newLatLng(latLng));
         mMap.animateCamera(CameraUpdateFactory.zoomTo(11));
+
+        // Update location in the database.
+        FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
+        if (user != null) {
+            updateLocation(user.getUid(), latLng);
+        } else {
+            Log.e("AUTH", "USER NOT LOGGED IN");
+            // TODO: Handle appropriately.
+        }
     }
 
     @Override
@@ -219,7 +237,7 @@ public class MapsActivity extends FragmentActivity implements
         }
     }
 
-    protected synchronized void buildGoogleApiClient() {
+    private synchronized void buildGoogleApiClient() {
         mGoogleApiClient = new GoogleApiClient.Builder(this)
                 .addConnectionCallbacks(this)
                 .addOnConnectionFailedListener(this)
@@ -228,7 +246,7 @@ public class MapsActivity extends FragmentActivity implements
         mGoogleApiClient.connect();
     }
 
-    public boolean checkLocationPermission() {
+    private boolean checkLocationPermission() {
         if (ContextCompat.checkSelfPermission(this,
                 Manifest.permission.ACCESS_FINE_LOCATION)
                 != PackageManager.PERMISSION_GRANTED) {
@@ -257,5 +275,16 @@ public class MapsActivity extends FragmentActivity implements
         } else {
             return true;
         }
+    }
+
+    /**
+     * Updates the location of the current user in the database.
+     *
+     * @param userId the userId of the current user.
+     * @param latLng current coordinates.
+     */
+    private void updateLocation(String userId, LatLng latLng) {
+        UserLocation loc = new UserLocation(latLng.latitude, latLng.longitude);
+        mDatabase.child("users").child(userId).child("location").setValue(loc);
     }
 }

@@ -2,7 +2,7 @@ apply plugin: 'com.android.application'
 
 android {
     compileSdkVersion 25
-    buildToolsVersion "25.0.2"
+    buildToolsVersion "25.0.3"
     defaultConfig {
         applicationId "com.android.eu.proximitymap"
         minSdkVersion 16
@@ -32,6 +32,9 @@ dependencies {
 
     // Needs to be 10.2.0, because the firebase-ui play-service is this version.
     compile 'com.google.android.gms:play-services-maps:10.2.0'
+
+    // Firebase real-time database.
+    compile 'com.google.firebase:firebase-database:10.2.0'
 
     // FirebaseUI auth for logging in and registering users.
     compile 'com.firebaseui:firebase-ui-auth:1.2.0'
