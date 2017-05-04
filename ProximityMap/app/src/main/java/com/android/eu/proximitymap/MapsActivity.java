@@ -1,7 +1,11 @@
 package com.android.eu.proximitymap;
 
+import android.support.annotation.NonNull;
+import android.support.design.widget.BottomNavigationView;
 import android.support.v4.app.FragmentActivity;
 import android.os.Bundle;
+import android.util.Log;
+import android.view.MenuItem;
 
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
@@ -9,8 +13,17 @@ import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.MarkerOptions;
+import com.ittianyu.bottomnavigationviewex.BottomNavigationViewEx;
 
-public class MapsActivity extends FragmentActivity implements OnMapReadyCallback {
+/**
+ * Map activity, default activity after logging in.
+ *
+ * Navigation bar documentation: https://github.com/ittianyu/BottomNavigationViewEx
+ */
+public class MapsActivity extends FragmentActivity implements OnMapReadyCallback, BottomNavigationView.OnNavigationItemSelectedListener {
+
+    private static final int NAV_HEIGHT = 190;
+    private static final float ICON_SIZE = 32f;
 
     private GoogleMap mMap;
 
@@ -18,10 +31,20 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_maps);
+
         // Obtain the SupportMapFragment and get notified when the map is ready to be used.
         SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager()
                 .findFragmentById(R.id.map);
         mapFragment.getMapAsync(this);
+
+        // Navigation settings.
+        BottomNavigationViewEx bnve = (BottomNavigationViewEx) findViewById(R.id.bottom_navigation);
+        bnve.enableAnimation(true);
+        bnve.enableItemShiftingMode(true);
+        bnve.setTextVisibility(false);
+        bnve.setIconSize(ICON_SIZE, ICON_SIZE);
+        bnve.setItemHeight(NAV_HEIGHT);
+        bnve.setOnNavigationItemSelectedListener(this);
     }
 
 
@@ -43,5 +66,28 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         LatLng sydney = new LatLng(-34, 151);
         mMap.addMarker(new MarkerOptions().position(sydney).title("Marker in Sydney"));
         mMap.moveCamera(CameraUpdateFactory.newLatLng(sydney));
+    }
+
+    /**
+     * Handles the actions for the bottom navigation bar.
+     * @param item that is clicked.
+     * @return whether the action is handled.
+     */
+    @Override
+    public boolean onNavigationItemSelected(@NonNull MenuItem item) {
+        switch (item.getItemId()) {
+            case R.id.action_map:
+                Log.v("NAV", "MAP");
+                return true;
+
+            case R.id.action_user:
+                Log.v("NAV", "USER");
+                return true;
+
+            case R.id.action_settings:
+                Log.v("NAV", "SETTINGS");
+                return true;
+        }
+        return false;
     }
 }

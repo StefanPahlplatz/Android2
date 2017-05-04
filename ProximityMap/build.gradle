@@ -16,7 +16,12 @@ buildscript {
 allprojects {
     repositories {
         jcenter()
+
+        // Used for Firebase auth.
         maven { url 'https://maven.fabric.io/public' }
+
+        // Bottom navigation.
+        maven { url "https://jitpack.io" }
     }
 }
 
