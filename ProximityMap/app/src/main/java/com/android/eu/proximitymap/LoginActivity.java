@@ -8,6 +8,7 @@ import android.util.Log;
 
 import com.firebase.ui.auth.AuthUI;
 import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
 
 import java.util.Arrays;
 
@@ -22,6 +23,10 @@ public class LoginActivity extends AppCompatActivity {
      * Response code for signing in.
      */
     private static final int RC_SIGN_IN = 0;
+    /**
+     * Firebase authentication instance that keeps track
+     * of the current user status and more.
+     */
     private FirebaseAuth auth;
 
     @Override
@@ -63,7 +68,12 @@ public class LoginActivity extends AppCompatActivity {
         if (requestCode == RC_SIGN_IN) {
             if (resultCode == RESULT_OK) {
                 // User logged in.
-                Log.d("AUTH", auth.getCurrentUser().getEmail());
+                FirebaseUser user = auth.getCurrentUser();
+                if (user != null) {
+                    Log.d("AUTH", auth.getCurrentUser().getEmail());
+                } else {
+                    throw new NullPointerException("User logged in but something went wrong!");
+                }
                 startMainActivity();
             } else {
                 // User not logged in.
@@ -73,7 +83,7 @@ public class LoginActivity extends AppCompatActivity {
     }
 
     /**
-     * Start the main intent and finish the current one.
+     * Start the maps intent and finish the current one.
      */
     private void startMainActivity() {
         Intent mainIntent = new Intent(this, MapsActivity.class);
