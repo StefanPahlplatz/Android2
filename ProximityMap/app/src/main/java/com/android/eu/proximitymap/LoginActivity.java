@@ -76,7 +76,7 @@ public class LoginActivity extends AppCompatActivity {
      * Start the main intent and finish the current one.
      */
     private void startMainActivity() {
-        Intent mainIntent = new Intent(this, MainActivity.class);
+        Intent mainIntent = new Intent(this, MapsActivity.class);
         startActivity(mainIntent);
         finish();
     }
