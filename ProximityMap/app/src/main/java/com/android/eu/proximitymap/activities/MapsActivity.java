@@ -266,6 +266,9 @@ public class MapsActivity extends FragmentActivity implements
         if (mGoogleApiClient != null) {
             LocationServices.FusedLocationApi.removeLocationUpdates(mGoogleApiClient, this);
         }
+
+        // Remove your own location entry.
+        mDatabase.getRoot().child("locations").child(mUser.getUid()).removeValue();
     }
 
     /**
