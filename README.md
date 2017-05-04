@@ -11,7 +11,7 @@
 > Create an app that can detect whether certain persons are physically in your neighborhood.
   In general terms, the minimal required functionalities are:
   
-- [ ] Show your own location with a marker on a map
+- [x] Show your own location with a marker on a map
 - [ ] Show also the location of the other users of this app with markers on the map, including their
       names (preferably use different colors, one for your own marker and another one for other
       users).
@@ -25,10 +25,10 @@
 - [x] Set up GIT account; invite teacher as a Master; commit frequently.
 - [ ]  Define the screenflow, and design an appropriate GUI using the Material Design Guidelines.
 The app must run on a phone and on a tablet (using the available screen size optimally).
-- [ ] Research how to get your current location from the device.
-- [ ] Research how a map can be shown (using Google Maps, or other app that can show a map).
+- [x] Research how to get your current location from the device.
+- [x] Research how a map can be shown (using Google Maps, or other app that can show a map).
 An implicit Intent has to be used for this.
-- [ ] Research what kind of server you will use (DB server, WCF server, webserver, GCM, or other).
+- [x] Research what kind of server you will use (DB server, WCF server, webserver, GCM, or other).
 - [ ] Communication with the server must be done asynchronously.
 - [ ] Research how the distance between two points can be calculated.
 - [ ] Research how to play a sound, or generate a vibration.
