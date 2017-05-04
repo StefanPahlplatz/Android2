@@ -12,7 +12,7 @@
   In general terms, the minimal required functionalities are:
   
 - [x] Show your own location with a marker on a map
-- [ ] Show also the location of the other users of this app with markers on the map, including their
+- [x] Show also the location of the other users of this app with markers on the map, including their
       names (preferably use different colors, one for your own marker and another one for other
       users).
 - [ ] Give an audible or vibration signal when one of these users comes within 10 meters to your
@@ -29,7 +29,7 @@ The app must run on a phone and on a tablet (using the available screen size opt
 - [x] Research how a map can be shown (using Google Maps, or other app that can show a map).
 An implicit Intent has to be used for this.
 - [x] Research what kind of server you will use (DB server, WCF server, webserver, GCM, or other).
-- [ ] Communication with the server must be done asynchronously.
+- [x] Communication with the server must be done asynchronously.
 - [ ] Research how the distance between two points can be calculated.
 - [ ] Research how to play a sound, or generate a vibration.
 - [ ] Test the app on some tablets and phones, using at least 3 different Android versions.
