@@ -19,6 +19,7 @@ import android.support.v7.app.ActionBar;
 import android.support.v7.app.AlertDialog;
 import android.util.Log;
 import android.view.MenuItem;
+import android.widget.Toast;
 
 import com.android.eu.proximitymap.R;
 import com.google.android.gms.tasks.OnCompleteListener;
@@ -250,7 +251,9 @@ public class SettingsActivity extends AppCompatPreferenceActivity {
                                                     FirebaseAuth.getInstance().signOut();
                                                     startLoginActivity();
                                                 } else {
-                                                    // TODO: handle error.
+                                                    Toast.makeText(AccountPreferenceFragment.this.getContext(),
+                                                            "Something went wrong",
+                                                            Toast.LENGTH_SHORT).show();
                                                     Log.e("AUTH", "Couldn't delete user.");
                                                 }
                                             }

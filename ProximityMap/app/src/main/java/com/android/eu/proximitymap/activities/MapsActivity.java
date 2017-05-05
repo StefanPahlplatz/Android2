@@ -1,6 +1,7 @@
 package com.android.eu.proximitymap.activities;
 
 import android.Manifest;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.location.Location;
@@ -12,6 +13,7 @@ import android.support.design.widget.BottomNavigationView;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.FragmentActivity;
 import android.support.v4.content.ContextCompat;
+import android.support.v7.app.AlertDialog;
 import android.util.Log;
 import android.view.MenuItem;
 import android.widget.Toast;
@@ -48,8 +50,6 @@ import java.util.HashMap;
  * Map activity, default activity after logging in.
  * <p>
  * Navigation bar documentation: https://github.com/ittianyu/BottomNavigationViewEx
- * <p>
- * // TODO: Change uid authentication to token authentication.
  */
 public class MapsActivity extends FragmentActivity implements
         OnMapReadyCallback,
@@ -219,7 +219,20 @@ public class MapsActivity extends FragmentActivity implements
                     mGoogleApiClient, mLocationRequest, this);
         } else {
             Log.e("PERMISSIONS", "USER DENIED LOCATION PERMISSION");
-            // TODO: Handle the option of the mUser denying location permission.
+            DialogInterface.OnClickListener dialogClickListener = new DialogInterface.OnClickListener() {
+                @Override
+                public void onClick(DialogInterface dialog, int which) {
+                    switch (which) {
+                        case DialogInterface.BUTTON_POSITIVE:
+                            finish();
+                            break;
+                    }
+                }
+            };
+            // No picture selected, sure you want to continue?
+            AlertDialog.Builder builder = new AlertDialog.Builder(this);
+            builder.setMessage("You can't use this application without GPS permissions")
+                    .setPositiveButton("I understand", dialogClickListener).show();
         }
     }
 
@@ -229,7 +242,7 @@ public class MapsActivity extends FragmentActivity implements
 
     @Override
     public void onConnectionFailed(@NonNull ConnectionResult connectionResult) {
-        // TODO: Handle failed.
+        Toast.makeText(this, "Couldn't connect to the servers.", Toast.LENGTH_SHORT).show();
     }
 
     public static final int MY_PERMISSIONS_REQUEST_LOCATION = 99;

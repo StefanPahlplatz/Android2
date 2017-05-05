@@ -132,20 +132,16 @@ public class PicturePickerActivity extends AppCompatActivity implements
      * ask the user if he/she is sure he want's to continue.
      */
     private void goToMapActivity() {
-        DialogInterface.OnClickListener dialogClickListener = new DialogInterface.OnClickListener() {
-            @Override
-            public void onClick(DialogInterface dialog, int which) {
-                switch (which) {
-                    case DialogInterface.BUTTON_POSITIVE:
-                        startMapActivity();
-                        break;
-
-                    case DialogInterface.BUTTON_NEGATIVE:
-                        break;
-                }
-            }
-        };
         if (getImageViewBitmap() == null) {
+            DialogInterface.OnClickListener dialogClickListener = new DialogInterface.OnClickListener() {
+                @Override
+                public void onClick(DialogInterface dialog, int which) {
+                    if (which == DialogInterface.BUTTON_POSITIVE) {
+                        startMapActivity();
+                    }
+                }
+            };
+
             // No picture selected, sure you want to continue?
             AlertDialog.Builder builder = new AlertDialog.Builder(this);
             builder.setMessage("Are you sure you want to continue without " +
