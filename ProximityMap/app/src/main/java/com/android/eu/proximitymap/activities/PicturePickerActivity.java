@@ -48,6 +48,7 @@ public class PicturePickerActivity extends AppCompatActivity implements
     private static final int GET_FROM_GALLERY = 0;
 
     private CircleImageView mImageView;
+    private Bitmap mBitmap;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -97,16 +98,16 @@ public class PicturePickerActivity extends AppCompatActivity implements
         // If the response is from a a successful image pick.
         if (requestCode == GET_FROM_GALLERY && resultCode == Activity.RESULT_OK) {
             Uri selectedImage = data.getData();
-            Bitmap bitmap = null;
+            mBitmap = null;
             try {
-                bitmap = MediaStore.Images.Media.getBitmap(this.getContentResolver(), selectedImage);
+                mBitmap = MediaStore.Images.Media.getBitmap(this.getContentResolver(), selectedImage);
             } catch (IOException e) {
                 e.printStackTrace();
             }
 
             // If the image was successfully loaded, set it.
-            if (bitmap != null) {
-                mImageView.setImageBitmap(bitmap);
+            if (mBitmap != null) {
+                mImageView.setImageBitmap(mBitmap);
             }
         }
     }
@@ -167,7 +168,7 @@ public class PicturePickerActivity extends AppCompatActivity implements
         FirebaseStorage storage = FirebaseStorage.getInstance();
         StorageReference storageRef = storage.getReference().child(uid).child("profile.jpg");
 
-        byte[] data = bitmapToByteArray(getImageViewBitmap());
+        byte[] data = bitmapToByteArray();
 
         final UploadTask uploadTask = storageRef.putBytes(data);
         uploadTask.addOnFailureListener(new OnFailureListener() {
@@ -219,12 +220,11 @@ public class PicturePickerActivity extends AppCompatActivity implements
     /**
      * Converts a bitmap to JPEG and then to a byte array.
      *
-     * @param bitmap to convert.
      * @return bitmap in byte[].
      */
-    private byte[] bitmapToByteArray(Bitmap bitmap) {
+    private byte[] bitmapToByteArray() {
         ByteArrayOutputStream bytes = new ByteArrayOutputStream();
-        bitmap.compress(Bitmap.CompressFormat.JPEG, 100, bytes);
+        mBitmap.compress(Bitmap.CompressFormat.JPEG, 100, bytes);
         return bytes.toByteArray();
     }
 }

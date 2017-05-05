@@ -48,7 +48,7 @@ import java.util.HashMap;
  * Map activity, default activity after logging in.
  * <p>
  * Navigation bar documentation: https://github.com/ittianyu/BottomNavigationViewEx
- *
+ * <p>
  * // TODO: Change uid authentication to token authentication.
  */
 public class MapsActivity extends FragmentActivity implements
