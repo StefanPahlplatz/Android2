@@ -60,6 +60,10 @@
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value="com.android.eu.proximitymap.activities.MapsActivity" />
         </activity>
+        <activity
+            android:name=".activities.ExtraUserDetailsActivity"
+            android:label="@string/title_activity_extra_user_details"
+            android:theme="@style/AppTheme.NoActionBar" />
     </application>
 
 </manifest>

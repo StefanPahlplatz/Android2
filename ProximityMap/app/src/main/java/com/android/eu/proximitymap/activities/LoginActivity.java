@@ -44,7 +44,7 @@ public class LoginActivity extends AppCompatActivity {
         if (auth.getCurrentUser() != null) {
             // User is already signed in.
             Log.v("AUTH", "Logged in as " + auth.getCurrentUser().getEmail());
-            startMainActivity();
+            startActivity(MapsActivity.class);
         } else {
             // User is not yet signed in, start the FirebaseUI intent by calling
             // createSignInIntentBuilder. The response of this intent is handled
@@ -76,10 +76,7 @@ public class LoginActivity extends AppCompatActivity {
                     Log.wtf("ToPkEk", "CaN't HaPpEn! ImPoSsIbLe StAte!");
                     throw new NullPointerException("User logged in but something went wrong!");
                 }
-
-                // TODO: Create new activity that asks the user for more information like profession and age, then store this in the database.
-
-                startMainActivity();
+                startActivity(ExtraUserDetailsActivity.class);
             } else {
                 // User not logged in.
                 Log.d("AUTH", "Not authenticated");
@@ -90,9 +87,9 @@ public class LoginActivity extends AppCompatActivity {
     /**
      * Start the maps intent and finish the current one.
      */
-    private void startMainActivity() {
-        Intent mainIntent = new Intent(this, MapsActivity.class);
-        startActivity(mainIntent);
+    private void startActivity(Class<?> activityToStart) {
+        Intent intent = new Intent(this, activityToStart);
+        startActivity(intent);
         finish();
     }
 }
