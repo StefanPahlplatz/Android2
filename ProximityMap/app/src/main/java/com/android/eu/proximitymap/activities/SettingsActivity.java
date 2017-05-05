@@ -158,6 +158,8 @@ public class SettingsActivity extends AppCompatPreferenceActivity {
     /**
      * This fragment shows general preferences only. It is used when the
      * activity is showing a two-pane settings UI.
+     *
+     * TODO: Implement the settings of this fragment in the mapactivity.
      */
     @TargetApi(Build.VERSION_CODES.HONEYCOMB)
     public static class AppearancePreferenceFragment extends PreferenceFragment {
@@ -167,12 +169,8 @@ public class SettingsActivity extends AppCompatPreferenceActivity {
             addPreferencesFromResource(R.xml.pref_appearance);
             setHasOptionsMenu(true);
 
-            // Bind the summaries of EditText/List/Dialog/Ringtone preferences
-            // to their values. When their values change, their summaries are
-            // updated to reflect the new value, per the Android Design
-            // guidelines.
-            bindPreferenceSummaryToValue(findPreference("example_text"));
-            bindPreferenceSummaryToValue(findPreference("example_list"));
+            // TODO: Check default value of marker colour on clean device to make sure it has a value.
+            bindPreferenceSummaryToValue(findPreference("marker_colours"));
         }
 
         @Override
@@ -189,6 +187,8 @@ public class SettingsActivity extends AppCompatPreferenceActivity {
     /**
      * This fragment shows notification preferences only. It is used when the
      * activity is showing a two-pane settings UI.
+     *
+     * // TODO: Handle the FirebaseAuthRecentLoginRequiredException error. See https://firebase.google.com/docs/auth/android/manage-users#re-authenticate_a_user
      */
     @TargetApi(Build.VERSION_CODES.HONEYCOMB)
     public static class AccountPreferenceFragment extends PreferenceFragment {

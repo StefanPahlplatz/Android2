@@ -3,12 +3,12 @@
     <!-- These settings headers are only used on tablets. -->
 
     <header
-        android:fragment="com.android.eu.proximitymap.activities.SettingsActivity$GeneralPreferenceFragment"
+        android:fragment="com.android.eu.proximitymap.activities.SettingsActivity$AppearancePreferenceFragment"
         android:icon="@drawable/ic_info_black_24dp"
         android:title="Appearance" />
 
     <header
-        android:fragment="com.android.eu.proximitymap.activities.SettingsActivity$NotificationPreferenceFragment"
+        android:fragment="com.android.eu.proximitymap.activities.SettingsActivity$AccountPreferenceFragment"
         android:icon="@drawable/ic_account_circle_black_24dp"
         android:title="Account" />
 
