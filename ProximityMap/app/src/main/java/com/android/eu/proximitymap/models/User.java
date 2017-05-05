@@ -20,6 +20,10 @@ public class User {
         // Default constructor required for calls to DataSnapshot.getValue(User.class)
     }
 
+    /**
+     * @param gender has to be 'm' or 'f'.
+     * @throws IllegalArgumentException when the gender is not 'm' or 'f'.
+     */
     public User(String name, String profession, String dob, String gender, Boolean student) {
         this.name = name;
         this.profession = profession;

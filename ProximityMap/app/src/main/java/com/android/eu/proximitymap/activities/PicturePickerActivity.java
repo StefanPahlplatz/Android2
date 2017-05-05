@@ -7,24 +7,47 @@ import android.graphics.Bitmap;
 import android.net.Uri;
 import android.os.Bundle;
 import android.provider.MediaStore;
+import android.support.annotation.NonNull;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
+import android.util.Log;
 import android.view.View;
+import android.widget.Toast;
 
 import com.android.eu.proximitymap.R;
+import com.android.eu.proximitymap.models.User;
+import com.android.eu.proximitymap.models.UserHelper;
+import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.OnFailureListener;
+import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.android.gms.tasks.Task;
+import com.google.firebase.storage.FirebaseStorage;
+import com.google.firebase.storage.StorageReference;
+import com.google.firebase.storage.UploadTask;
 
+import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 
 import de.hdodenhof.circleimageview.CircleImageView;
 
+/**
+ * This activity gives the user the option to select a profile picture. This is not mandatory.
+ * When the user clicks the choose picture button it opens a gallery intent and processes it's
+ * result in onActivityResult.
+ * <p>
+ * When the user clicks the next button it checks if the user choose an image or not. If he choose
+ * an image, it uploads this image to the firebase storage. When this action is completed it updates
+ * the user object with the newly added picture download url. When this action is successfully
+ * completed it goes to the MapsActivity.
+ */
 public class PicturePickerActivity extends AppCompatActivity implements
-        View.OnClickListener {
+        View.OnClickListener,
+        OnCompleteListener {
 
     private static final int GET_FROM_GALLERY = 0;
 
     private CircleImageView mImageView;
-    private Bitmap mBitmap;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -74,16 +97,32 @@ public class PicturePickerActivity extends AppCompatActivity implements
         // If the response is from a a successful image pick.
         if (requestCode == GET_FROM_GALLERY && resultCode == Activity.RESULT_OK) {
             Uri selectedImage = data.getData();
+            Bitmap bitmap = null;
             try {
-                mBitmap = MediaStore.Images.Media.getBitmap(this.getContentResolver(), selectedImage);
+                bitmap = MediaStore.Images.Media.getBitmap(this.getContentResolver(), selectedImage);
             } catch (IOException e) {
                 e.printStackTrace();
             }
 
             // If the image was successfully loaded, set it.
-            if (mBitmap != null) {
-                mImageView.setImageBitmap(mBitmap);
+            if (bitmap != null) {
+                mImageView.setImageBitmap(bitmap);
             }
+        }
+    }
+
+    /**
+     * Called when the action of inserting the new user object is completed.
+     *
+     * @param task information about the completed task.
+     */
+    @Override
+    public void onComplete(@NonNull Task task) {
+        if (task.isSuccessful()) {
+            startMapActivity();
+        } else {
+            Toast.makeText(this, "Coulnd't update your information, please try again.",
+                    Toast.LENGTH_SHORT).show();
         }
     }
 
@@ -95,7 +134,7 @@ public class PicturePickerActivity extends AppCompatActivity implements
         DialogInterface.OnClickListener dialogClickListener = new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialog, int which) {
-                switch (which){
+                switch (which) {
                     case DialogInterface.BUTTON_POSITIVE:
                         startMapActivity();
                         break;
@@ -105,14 +144,55 @@ public class PicturePickerActivity extends AppCompatActivity implements
                 }
             }
         };
-        if (mBitmap == null) {
+        if (getImageViewBitmap() == null) {
+            // No picture selected, sure you want to continue?
             AlertDialog.Builder builder = new AlertDialog.Builder(this);
             builder.setMessage("Are you sure you want to continue without " +
                     "uploading a profile picture?").setPositiveButton("Yes", dialogClickListener)
                     .setNegativeButton("No", dialogClickListener).show();
         } else {
-            startMapActivity();
+            // MapActivity is started by a method called by uploadPicture()
+            uploadPicture();
         }
+    }
+
+    /**
+     * Uploads the selected picture to the firebase storage.
+     * If the upload failed show a toast saying it failed.
+     * If the upload was successful, add the picture download link to the user profile by
+     * calling addPictureLink().
+     */
+    private void uploadPicture() {
+        String uid = UserHelper.getUid();
+        FirebaseStorage storage = FirebaseStorage.getInstance();
+        StorageReference storageRef = storage.getReference().child(uid).child("profile.jpg");
+
+        byte[] data = bitmapToByteArray(getImageViewBitmap());
+
+        final UploadTask uploadTask = storageRef.putBytes(data);
+        uploadTask.addOnFailureListener(new OnFailureListener() {
+            @Override
+            public void onFailure(@NonNull Exception exception) {
+                Log.e("STORAGE", exception.getCause().toString());
+                Toast.makeText(PicturePickerActivity.this, "Couldn't upload the image.",
+                        Toast.LENGTH_SHORT).show();
+            }
+        }).addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
+            @Override
+            public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
+                //noinspection VisibleForTests
+                Uri downloadUrl = taskSnapshot.getDownloadUrl();
+                User user = UserHelper.getInstance();
+                assert downloadUrl != null;
+                user.picture = downloadUrl.toString();
+
+                /*
+                  Upload the picture url to the real-time database.
+                  This calls onComplete when done.
+                 */
+                UserHelper.uploadUser(user, PicturePickerActivity.this);
+            }
+        });
     }
 
     /**
@@ -122,5 +202,29 @@ public class PicturePickerActivity extends AppCompatActivity implements
         Intent mapIntent = new Intent(this, MapsActivity.class);
         startActivity(mapIntent);
         finish();
+    }
+
+    /**
+     * Returns the bitmap that is currently in the imageView.
+     * Can be null if imageView is empty.
+     *
+     * @return bitmap from imageView.
+     */
+    private Bitmap getImageViewBitmap() {
+        mImageView.setDrawingCacheEnabled(true);
+        mImageView.buildDrawingCache();
+        return mImageView.getDrawingCache();
+    }
+
+    /**
+     * Converts a bitmap to JPEG and then to a byte array.
+     *
+     * @param bitmap to convert.
+     * @return bitmap in byte[].
+     */
+    private byte[] bitmapToByteArray(Bitmap bitmap) {
+        ByteArrayOutputStream bytes = new ByteArrayOutputStream();
+        bitmap.compress(Bitmap.CompressFormat.JPEG, 100, bytes);
+        return bytes.toByteArray();
     }
 }

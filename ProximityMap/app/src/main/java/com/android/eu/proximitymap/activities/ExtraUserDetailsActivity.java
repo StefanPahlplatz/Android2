@@ -18,11 +18,10 @@ import android.widget.Toast;
 
 import com.android.eu.proximitymap.R;
 import com.android.eu.proximitymap.models.User;
+import com.android.eu.proximitymap.models.UserHelper;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
-import com.google.firebase.database.DatabaseReference;
-import com.google.firebase.database.FirebaseDatabase;
 
 import java.text.SimpleDateFormat;
 import java.util.Arrays;
@@ -104,6 +103,7 @@ public class ExtraUserDetailsActivity extends AppCompatActivity implements
             return;
         }
 
+        // Compose a user object.
         String name = FirebaseAuth.getInstance().getCurrentUser().getDisplayName();
         String prof = mLayoutProfession.getEditText().getText().toString();
         String dob = mLayoutDob.getEditText().getText().toString();
@@ -111,12 +111,11 @@ public class ExtraUserDetailsActivity extends AppCompatActivity implements
         Boolean student = mSwitchStudent.isChecked();
         User user = new User(name, prof, dob, gender, student);
 
-        String uid = FirebaseAuth.getInstance().getCurrentUser().getUid();
-        DatabaseReference database = FirebaseDatabase.getInstance().getReference("users");
-        //noinspection unchecked
-        database.child(uid)
-                .setValue(user)
-                .addOnCompleteListener(this);
+        // Store the user object in the user helper to later be able to get it easily.
+        UserHelper.setUser(user);
+
+        // Upload the user.
+        UserHelper.uploadUser(user, this);
     }
 
     /**

@@ -62,6 +62,8 @@ public class LoginActivity extends AppCompatActivity {
     /**
      * Handles the response from the FirebaseUI intent. If the action succeeded
      * it calls .startMainActivity(), otherwise it does nothing.
+     *
+     * @throws NullPointerException when firebase can't get the user object.
      */
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
