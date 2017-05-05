@@ -1,6 +1,7 @@
 package com.android.eu.proximitymap.activities;
 
 import android.Manifest;
+import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.location.Location;
 import android.os.Build;
@@ -47,6 +48,8 @@ import java.util.HashMap;
  * Map activity, default activity after logging in.
  * <p>
  * Navigation bar documentation: https://github.com/ittianyu/BottomNavigationViewEx
+ *
+ * // TODO: Change uid authentication to token authentication.
  */
 public class MapsActivity extends FragmentActivity implements
         OnMapReadyCallback,
@@ -174,7 +177,8 @@ public class MapsActivity extends FragmentActivity implements
                 return true;
 
             case R.id.action_settings:
-                Log.v("NAV", "SETTINGS");
+                Intent settingsIntent = new Intent(this, SettingsActivity.class);
+                startActivity(settingsIntent);
                 return true;
         }
         return false;
@@ -388,6 +392,7 @@ public class MapsActivity extends FragmentActivity implements
 
     /**
      * Adds a marker to the map.
+     *
      * @param dataSnapshot of the marker.
      */
     private void addMarker(DataSnapshot dataSnapshot) {
