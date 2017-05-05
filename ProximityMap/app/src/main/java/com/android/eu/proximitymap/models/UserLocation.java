@@ -21,7 +21,7 @@ public class UserLocation extends SimpleLocation {
         this.uid = uid;
     }
 
-    public LatLng getLatLng() {
+    private LatLng getLatLng() {
         return new LatLng(this.lat, this.lng);
     }
 

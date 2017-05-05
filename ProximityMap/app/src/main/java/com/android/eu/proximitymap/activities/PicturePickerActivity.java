@@ -1,14 +1,18 @@
 package com.android.eu.proximitymap.activities;
 
+import android.Manifest;
 import android.animation.ObjectAnimator;
 import android.app.Activity;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
 import android.net.Uri;
 import android.os.Bundle;
 import android.provider.MediaStore;
 import android.support.annotation.NonNull;
+import android.support.v4.app.ActivityCompat;
+import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
@@ -50,6 +54,7 @@ public class PicturePickerActivity extends AppCompatActivity implements
         OnCompleteListener {
 
     private static final int GET_FROM_GALLERY = 0;
+    private static final int MY_PERMISSIONS_REQUEST_READ_STORAGE = 1;
 
     private CircleImageView mImageView;
     private Bitmap mBitmap;
@@ -78,14 +83,49 @@ public class PicturePickerActivity extends AppCompatActivity implements
     public void onClick(View v) {
         switch (v.getId()) {
             case R.id.button_pick_image:
-                startActivityForResult(new Intent(Intent.ACTION_PICK,
-                                android.provider.MediaStore.Images.Media.INTERNAL_CONTENT_URI),
-                        GET_FROM_GALLERY);
+                if (ContextCompat.checkSelfPermission(this,
+                        Manifest.permission.READ_EXTERNAL_STORAGE) !=
+                        PackageManager.PERMISSION_GRANTED) {
+                    ActivityCompat.requestPermissions(this,
+                            new String[]{Manifest.permission.READ_EXTERNAL_STORAGE},
+                            MY_PERMISSIONS_REQUEST_READ_STORAGE);
+                } else {
+                    startActivityForResult(new Intent(Intent.ACTION_PICK,
+                                    android.provider.MediaStore.Images.Media.INTERNAL_CONTENT_URI),
+                            GET_FROM_GALLERY);
+                }
                 break;
 
             case R.id.button_next:
                 goToMapActivity();
                 break;
+        }
+    }
+
+
+    /**
+     * Response of asking for storage read permission. Start the gallery activity if we
+     * got the permission.
+     *
+     * @param requestCode  The request code passed in requestPermissions(android.app.Activity, String[], int)
+     * @param permissions  The requested permissions. Never null.
+     * @param grantResults The grant results for the corresponding permissions which is either
+     *                     PERMISSION_GRANTED or PERMISSION_DENIED. Never null.
+     */
+    @Override
+    public void onRequestPermissionsResult(int requestCode, @NonNull String permissions[],
+                                           @NonNull int[] grantResults) {
+        switch (requestCode) {
+            case MY_PERMISSIONS_REQUEST_READ_STORAGE: {
+                // If request is cancelled, the result arrays are empty.
+                if (grantResults.length > 0
+                        && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+
+                    startActivityForResult(new Intent(Intent.ACTION_PICK,
+                                    android.provider.MediaStore.Images.Media.INTERNAL_CONTENT_URI),
+                            GET_FROM_GALLERY);
+                }
+            }
         }
     }
 
@@ -237,7 +277,7 @@ public class PicturePickerActivity extends AppCompatActivity implements
      */
     private byte[] bitmapToByteArray() {
         ByteArrayOutputStream bytes = new ByteArrayOutputStream();
-        mBitmap.compress(Bitmap.CompressFormat.JPEG, 100, bytes);
+        mBitmap.compress(Bitmap.CompressFormat.JPEG, 20, bytes);
         return bytes.toByteArray();
     }
 }

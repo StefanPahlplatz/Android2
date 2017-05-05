@@ -4,7 +4,15 @@ import android.Manifest;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.PackageManager;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
+import android.graphics.Canvas;
+import android.graphics.Paint;
+import android.graphics.PorterDuff;
+import android.graphics.PorterDuffXfermode;
+import android.graphics.Rect;
 import android.location.Location;
+import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
@@ -20,6 +28,7 @@ import android.widget.Toast;
 
 import com.android.eu.proximitymap.R;
 import com.android.eu.proximitymap.models.SimpleLocation;
+import com.android.eu.proximitymap.models.User;
 import com.android.eu.proximitymap.models.UserLocation;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.api.GoogleApiClient;
@@ -44,6 +53,8 @@ import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 import com.ittianyu.bottomnavigationviewex.BottomNavigationViewEx;
 
+import java.io.IOException;
+import java.net.URL;
 import java.util.HashMap;
 
 /**
@@ -63,6 +74,8 @@ public class MapsActivity extends FragmentActivity implements
     private static final int INITIAL_ZOOM = 16;
     private static final float ICON_SIZE = 32f;
     private static final float MARKER_COLOUR = BitmapDescriptorFactory.HUE_BLUE;
+    private static final boolean NO_CUSTOM_ICON = false;
+    private static final boolean HAS_CUSTOM_ICON = false;
 
 
     private GoogleMap mMap;
@@ -410,14 +423,13 @@ public class MapsActivity extends FragmentActivity implements
      */
     private void addMarker(DataSnapshot dataSnapshot) {
         SimpleLocation simpleLocation = dataSnapshot.getValue(SimpleLocation.class);
-        String uid = dataSnapshot.getKey();
+        final String uid = dataSnapshot.getKey();
 
         // Don't place markers for yourself.
         if (uid.equals(mUser.getUid())) {
             return;
         }
 
-        // TODO: Don't allow markers to jump huge distances.
         // Check and remove any duplicates.
         for (UserLocation loc : mMarkers.keySet()) {
             if (loc.uid.equals(uid)) {
@@ -428,7 +440,93 @@ public class MapsActivity extends FragmentActivity implements
         UserLocation userLocation = new UserLocation(simpleLocation, uid);
         MarkerOptions newMarker = userLocation.getMarkerOptions(MARKER_COLOUR);
         if (newMarker != null) {
+            Log.d("ICON", "Added default marker");
             mMarkers.put(userLocation, mMap.addMarker(newMarker));
+            mMarkers.get(userLocation).setTag(NO_CUSTOM_ICON);
+        }
+
+        final DatabaseReference ref = FirebaseDatabase.getInstance().getReference("users")
+                .child(uid);
+        ref.addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                Log.d("ICON", "onDataChange called");
+                User user = dataSnapshot.getValue(User.class);
+                new MarkerIconTask(uid).execute(user.picture);
+            }
+
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+                Log.e("ICON", "onCancelled called");
+            }
+        });
+    }
+
+    private class MarkerIconTask extends AsyncTask<String, Void, Bitmap> {
+
+        private String uid;
+
+        MarkerIconTask(String uid) {
+            this.uid = uid;
+        }
+
+        /**
+         * @param params at index 0 is the download link for the bitmap.
+         * @return bitmap or null.
+         */
+        @Override
+        protected Bitmap doInBackground(String... params) {
+            Log.d("ICON", "Loading the bitmap from " + params[0]);
+            try {
+                URL url = new URL(params[0]);
+
+                Bitmap bmp = BitmapFactory.decodeStream(url.openConnection().getInputStream());
+                bmp = Bitmap.createBitmap(bmp, 0, 0, bmp.getHeight(), bmp.getHeight());
+                bmp = Bitmap.createScaledBitmap(bmp, 200, 200, true);
+                bmp = getCroppedBitmap(bmp);
+                return bmp;
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+            return null;
+        }
+
+        @Override
+        protected void onPostExecute(Bitmap bitmap) {
+            Log.d("ICON", "Loaded");
+            for (UserLocation loc : mMarkers.keySet()) {
+                if (loc.uid.equals(uid)) {
+                    if (mMarkers.get(loc).getTag().equals(NO_CUSTOM_ICON)) {
+                        mMarkers.get(loc).setIcon(BitmapDescriptorFactory.fromBitmap(bitmap));
+                        mMarkers.get(loc).setTag(HAS_CUSTOM_ICON);
+                        Log.d("ICON", "Assigned");
+                    }
+                    return;
+                }
+            }
+            Log.d("ICON", "Couldn't find corresponding marker");
+        }
+
+        private Bitmap getCroppedBitmap(Bitmap bitmap) {
+            Bitmap output = Bitmap.createBitmap(bitmap.getWidth(),
+                    bitmap.getHeight(), Bitmap.Config.ARGB_8888);
+            Canvas canvas = new Canvas(output);
+
+            final int color = 0xff424242;
+            final Paint paint = new Paint();
+            final Rect rect = new Rect(0, 0, bitmap.getWidth(), bitmap.getHeight());
+
+            paint.setAntiAlias(true);
+            canvas.drawARGB(0, 0, 0, 0);
+            paint.setColor(color);
+            // canvas.drawRoundRect(rectF, roundPx, roundPx, paint);
+            canvas.drawCircle(bitmap.getWidth() / 2, bitmap.getHeight() / 2,
+                    bitmap.getWidth() / 2, paint);
+            paint.setXfermode(new PorterDuffXfermode(PorterDuff.Mode.SRC_IN));
+            canvas.drawBitmap(bitmap, rect, rect, paint);
+            //Bitmap _bmp = Bitmap.createScaledBitmap(output, 60, 60, false);
+            //return _bmp;
+            return output;
         }
     }
 }
