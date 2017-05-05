@@ -29,4 +29,6 @@
         <item>270.0</item>
         <item>60.0</item>
     </string-array>
+    <string name="title_activity_extra_user_details">Additional Info</string>
+    <string name="title_activity_picture_picker">Choose A Profile Picture</string>
 </resources>

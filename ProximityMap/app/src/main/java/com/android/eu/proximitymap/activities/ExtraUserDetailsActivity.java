@@ -1,5 +1,6 @@
 package com.android.eu.proximitymap.activities;
 
+import android.app.DatePickerDialog;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
@@ -9,6 +10,7 @@ import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
+import android.widget.DatePicker;
 import android.widget.EditText;
 import android.widget.RadioButton;
 import android.widget.Switch;
@@ -22,15 +24,22 @@ import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 
+import java.text.SimpleDateFormat;
 import java.util.Arrays;
+import java.util.Calendar;
+import java.util.Locale;
 
-public class ExtraUserDetailsActivity extends AppCompatActivity implements View.OnClickListener, OnCompleteListener {
+public class ExtraUserDetailsActivity extends AppCompatActivity implements
+        View.OnClickListener,
+        OnCompleteListener {
+
+    private final Calendar myCalendar = Calendar.getInstance();
 
     private TextInputLayout mLayoutProfession;
     private TextInputLayout mLayoutDob;
     private RadioButton mRadioMale;
     private RadioButton mRadioFemale;
-    private Switch swStudent;
+    private Switch mSwitchStudent;
 
     /**
      * // TODO: Add textwatcher for validation as shown here: http://stackoverflow.com/questions/33072569/best-practice-input-validation-android
@@ -46,10 +55,37 @@ public class ExtraUserDetailsActivity extends AppCompatActivity implements View.
         mLayoutDob = (TextInputLayout) findViewById(R.id.input_layout_dob);
         mRadioMale = (RadioButton) findViewById(R.id.rb_male);
         mRadioFemale = (RadioButton) findViewById(R.id.rb_female);
-        swStudent = (Switch) findViewById(R.id.switch_student);
-        Button btnNext = (Button) findViewById(R.id.button_next);
+        mSwitchStudent = (Switch) findViewById(R.id.switch_student);
+        final Button btnNext = (Button) findViewById(R.id.button_next);
 
         btnNext.setOnClickListener(this);
+
+        final DatePickerDialog.OnDateSetListener date = new DatePickerDialog.OnDateSetListener() {
+            @Override
+            public void onDateSet(DatePicker view, int year, int monthOfYear, int dayOfMonth) {
+                myCalendar.set(Calendar.YEAR, year);
+                myCalendar.set(Calendar.MONTH, monthOfYear);
+                myCalendar.set(Calendar.DAY_OF_MONTH, dayOfMonth);
+                updateLabel();
+            }
+        };
+
+        mLayoutDob.getEditText().setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                new DatePickerDialog(ExtraUserDetailsActivity.this, date, myCalendar
+                        .get(Calendar.YEAR), myCalendar.get(Calendar.MONTH),
+                        myCalendar.get(Calendar.DAY_OF_MONTH)).show();
+            }
+        });
+        mLayoutDob.getEditText().setOnFocusChangeListener(new View.OnFocusChangeListener() {
+            @Override
+            public void onFocusChange(View v, boolean hasFocus) {
+                new DatePickerDialog(ExtraUserDetailsActivity.this, date, myCalendar
+                        .get(Calendar.YEAR), myCalendar.get(Calendar.MONTH),
+                        myCalendar.get(Calendar.DAY_OF_MONTH)).show();
+            }
+        });
     }
 
     /**
@@ -68,11 +104,12 @@ public class ExtraUserDetailsActivity extends AppCompatActivity implements View.
             return;
         }
 
+        String name = FirebaseAuth.getInstance().getCurrentUser().getDisplayName();
         String prof = mLayoutProfession.getEditText().getText().toString();
         String dob = mLayoutDob.getEditText().getText().toString();
         String gender = mRadioMale.isChecked() ? "m" : "f";
-        Boolean student = swStudent.isChecked();
-        User user = new User(prof, dob, gender, student);
+        Boolean student = mSwitchStudent.isChecked();
+        User user = new User(name, prof, dob, gender, student);
 
         String uid = FirebaseAuth.getInstance().getCurrentUser().getUid();
         DatabaseReference database = FirebaseDatabase.getInstance().getReference("users");
@@ -130,5 +167,18 @@ public class ExtraUserDetailsActivity extends AppCompatActivity implements View.
             return false;
         }
         return true;
+    }
+
+    /**
+     * Changes the date of birth EditText to the corresponding selected date.
+     */
+    private void updateLabel() {
+        String myFormat = "MM/dd/yy"; //In which you need put here
+        SimpleDateFormat sdf = new SimpleDateFormat(myFormat, Locale.US);
+
+        EditText et = mLayoutDob.getEditText();
+        if (et != null) {
+            et.setText(sdf.format(myCalendar.getTime()));
+        }
     }
 }

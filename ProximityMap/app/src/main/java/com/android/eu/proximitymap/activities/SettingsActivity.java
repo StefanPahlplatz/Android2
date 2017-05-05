@@ -232,6 +232,7 @@ public class SettingsActivity extends AppCompatPreferenceActivity {
                 }
             });
 
+            // TODO: Test if this actually works.
             delete.setSummary("This will delete your account and all your information. This cannot be undone!");
             delete.setOnPreferenceClickListener(new Preference.OnPreferenceClickListener() {
                 @Override
@@ -246,10 +247,14 @@ public class SettingsActivity extends AppCompatPreferenceActivity {
                                             public void onComplete(@NonNull Task<Void> task) {
                                                 if (task.isSuccessful()) {
                                                     Log.d("AUTH", "User deleted");
+                                                    FirebaseAuth.getInstance().signOut();
+                                                    startLoginActivity();
+                                                } else {
+                                                    // TODO: handle error.
+                                                    Log.e("AUTH", "Couldn't delete user.");
                                                 }
                                             }
                                         });
-                                        startLoginActivity();
                                     }
                                 }
                             };

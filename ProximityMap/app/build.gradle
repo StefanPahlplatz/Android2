@@ -27,28 +27,21 @@ dependencies {
     androidTestCompile('com.android.support.test.espresso:espresso-core:2.2.2', {
         exclude group: 'com.android.support', module: 'support-annotations'
     })
-    // Design library to use the bottom toolbar.
+    // ======= DEFAULT ========
     compile 'com.android.support:design:25.1.1'
-
-    // Needs to be 25.1.1, because 25.3.1 will cause comparability problems.
     compile 'com.android.support:appcompat-v7:25.1.1'
 
-    // Needs to be 10.2.0, because the firebase-ui play-service is this version.
+    // ======= MAPS =======
     compile 'com.google.android.gms:play-services-maps:10.2.0'
-
-    // Firebase real-time database.
-    compile 'com.google.firebase:firebase-database:10.2.0'
-
-    // FirebaseUI auth for logging in and registering users.
-    compile 'com.firebaseui:firebase-ui-auth:1.2.0'
-
-    // Bottom navigation view.
-    compile 'com.github.ittianyu:BottomNavigationViewEx:1.1.7'
-
-    // Used to get the location.
     compile 'com.google.android.gms:play-services-location:10.2.0'
 
-    // Circle image view
+    // ======= FIREBASE =======
+    compile 'com.firebaseui:firebase-ui-auth:1.2.0'
+    compile 'com.google.firebase:firebase-database:10.2.0'
+    compile 'com.google.firebase:firebase-storage:10.2.0'
+
+    // ======= EXTRAS =======
+    compile 'com.github.ittianyu:BottomNavigationViewEx:1.1.7'
     compile 'de.hdodenhof:circleimageview:2.1.0'
 
     testCompile 'junit:junit:4.12'

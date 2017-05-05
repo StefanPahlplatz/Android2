@@ -9,22 +9,26 @@ import com.google.firebase.database.IgnoreExtraProperties;
 @IgnoreExtraProperties
 public class User {
 
+    public String name;
     public String profession;
     public String dob;
     public String gender;
     public Boolean student;
+    public String picture;
 
     public User() {
         // Default constructor required for calls to DataSnapshot.getValue(User.class)
     }
 
-    public User(String profession, String dob, String gender, Boolean student) {
+    public User(String name, String profession, String dob, String gender, Boolean student) {
+        this.name = name;
         this.profession = profession;
         this.dob = dob;
         this.gender = gender;
         this.student = student;
+        this.picture = "";
 
-        if (!gender.equals("m") || !gender.equals("f")) {
+        if (!(gender.equals("m") || gender.equals("f"))) {
             throw new IllegalArgumentException("Gender can only be 'm' or 'f'.");
         }
     }
