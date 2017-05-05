@@ -48,6 +48,9 @@ dependencies {
     // Used to get the location.
     compile 'com.google.android.gms:play-services-location:10.2.0'
 
+    // Circle image view
+    compile 'de.hdodenhof:circleimageview:2.1.0'
+
     testCompile 'junit:junit:4.12'
 }
 
