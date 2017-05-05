@@ -1,5 +1,6 @@
 package com.android.eu.proximitymap.activities;
 
+import android.animation.ObjectAnimator;
 import android.app.Activity;
 import android.content.DialogInterface;
 import android.content.Intent;
@@ -13,6 +14,8 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.View;
+import android.view.animation.DecelerateInterpolator;
+import android.widget.ProgressBar;
 import android.widget.Toast;
 
 import com.android.eu.proximitymap.R;
@@ -23,6 +26,7 @@ import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.storage.FirebaseStorage;
+import com.google.firebase.storage.OnProgressListener;
 import com.google.firebase.storage.StorageReference;
 import com.google.firebase.storage.UploadTask;
 
@@ -49,6 +53,7 @@ public class PicturePickerActivity extends AppCompatActivity implements
 
     private CircleImageView mImageView;
     private Bitmap mBitmap;
+    private ProgressBar mProgressBar;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -58,6 +63,7 @@ public class PicturePickerActivity extends AppCompatActivity implements
         setSupportActionBar(toolbar);
 
         mImageView = (CircleImageView) findViewById(R.id.image_view_profile);
+        mProgressBar = (ProgressBar) findViewById(R.id.simpleProgressBar);
 
         findViewById(R.id.button_pick_image).setOnClickListener(this);
         findViewById(R.id.button_next).setOnClickListener(this);
@@ -167,6 +173,7 @@ public class PicturePickerActivity extends AppCompatActivity implements
         byte[] data = bitmapToByteArray();
 
         final UploadTask uploadTask = storageRef.putBytes(data);
+        mProgressBar.setVisibility(View.VISIBLE);
         uploadTask.addOnFailureListener(new OnFailureListener() {
             @Override
             public void onFailure(@NonNull Exception exception) {
@@ -177,7 +184,7 @@ public class PicturePickerActivity extends AppCompatActivity implements
         }).addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
             @Override
             public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
-                //noinspection VisibleForTests
+                @SuppressWarnings("VisibleForTests")
                 Uri downloadUrl = taskSnapshot.getDownloadUrl();
                 User user = UserHelper.getInstance();
                 assert downloadUrl != null;
@@ -188,6 +195,16 @@ public class PicturePickerActivity extends AppCompatActivity implements
                   This calls onComplete when done.
                  */
                 UserHelper.uploadUser(user, PicturePickerActivity.this);
+            }
+        }).addOnProgressListener(new OnProgressListener<UploadTask.TaskSnapshot>() {
+            @Override
+            public void onProgress(UploadTask.TaskSnapshot taskSnapshot) {
+                @SuppressWarnings("VisibleForTests")
+                Double progress = (100.0 * taskSnapshot.getBytesTransferred()) / taskSnapshot.getTotalByteCount();
+                ObjectAnimator animation = ObjectAnimator.ofInt(mProgressBar, "progress", progress.intValue());
+                animation.setDuration(500); // 0.5 second
+                animation.setInterpolator(new DecelerateInterpolator());
+                animation.start();
             }
         });
     }
