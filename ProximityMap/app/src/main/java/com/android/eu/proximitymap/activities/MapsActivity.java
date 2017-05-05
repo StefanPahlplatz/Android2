@@ -414,6 +414,8 @@ public class MapsActivity extends FragmentActivity implements
 
         UserLocation userLocation = new UserLocation(simpleLocation, uid);
         MarkerOptions newMarker = userLocation.getMarkerOptions(MARKER_COLOUR);
-        mMarkers.put(userLocation, mMap.addMarker(newMarker));
+        if (newMarker != null) {
+            mMarkers.put(userLocation, mMap.addMarker(newMarker));
+        }
     }
 }
