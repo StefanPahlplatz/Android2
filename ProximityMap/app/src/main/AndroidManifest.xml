@@ -9,7 +9,7 @@
     <!-- To check network state i.e if we are connected to any network or not. -->
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
 
-    <!-- To determine user’s location using WiFi and mobile. It will gove us approximate location. -->
+    <!-- To determine user’s location using WiFi and mobile. It will give us an approximate location. -->
     <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
 
     <!-- To determine user’s location using GPS. It will give us precise location. -->

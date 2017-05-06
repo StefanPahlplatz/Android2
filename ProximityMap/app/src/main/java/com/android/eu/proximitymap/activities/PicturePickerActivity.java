@@ -168,7 +168,7 @@ public class PicturePickerActivity extends AppCompatActivity implements
         if (task.isSuccessful()) {
             startMapActivity();
         } else {
-            Toast.makeText(this, "Coulnd't update your information, please try again.",
+            Toast.makeText(this, "Couldn't update your information, please try again.",
                     Toast.LENGTH_SHORT).show();
         }
     }

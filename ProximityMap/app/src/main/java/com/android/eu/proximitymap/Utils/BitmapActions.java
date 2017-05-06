@@ -30,7 +30,7 @@ class BitmapActions {
 
         // Get the bitmap as a circle.
         if (circle) {
-            original = getCircleBitmap(original, true);
+            original = getCircleBitmap(original, border);
         }
 
         return original;

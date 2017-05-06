@@ -28,9 +28,6 @@ import java.util.HashMap;
 
 public class MarkerManager {
 
-    private static final float MARKER_COLOUR = BitmapDescriptorFactory.HUE_BLUE;
-
-
     private String mUid;
     private HashMap<UserLocation, Marker> mMarkers;
     private GoogleMap mMap;
@@ -88,7 +85,7 @@ public class MarkerManager {
         remove(uid);
 
         // Get marker options.
-        MarkerOptions markerOptions = newLocation.getMarkerOptions(MARKER_COLOUR);
+        MarkerOptions markerOptions = newLocation.getMarkerOptions();
 
         // Add the marker to the map.
         Marker marker = mMap.addMarker(markerOptions);
@@ -136,7 +133,7 @@ public class MarkerManager {
         /**
          * Uid of the user that belongs to the icon that is being loaded.
          */
-        private String uid;
+        final private String uid;
 
         MarkerIconTask(String uid) {
             this.uid = uid;

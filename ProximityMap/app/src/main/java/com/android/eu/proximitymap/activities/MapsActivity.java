@@ -242,7 +242,7 @@ public class MapsActivity extends FragmentActivity implements
         Toast.makeText(this, "Couldn't connect to the servers.", Toast.LENGTH_SHORT).show();
     }
 
-    public static final int MY_PERMISSIONS_REQUEST_LOCATION = 99;
+    private static final int MY_PERMISSIONS_REQUEST_LOCATION = 99;
 
     @Override
     public void onRequestPermissionsResult(int requestCode, @NonNull String permissions[],
@@ -355,7 +355,7 @@ public class MapsActivity extends FragmentActivity implements
         mGoogleApiClient.connect();
     }
 
-    private boolean checkLocationPermission() {
+    private void checkLocationPermission() {
         if (ContextCompat.checkSelfPermission(this,
                 Manifest.permission.ACCESS_FINE_LOCATION)
                 != PackageManager.PERMISSION_GRANTED) {
@@ -380,9 +380,6 @@ public class MapsActivity extends FragmentActivity implements
                         new String[]{Manifest.permission.ACCESS_FINE_LOCATION},
                         MY_PERMISSIONS_REQUEST_LOCATION);
             }
-            return false;
-        } else {
-            return true;
         }
     }
 

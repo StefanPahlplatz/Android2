@@ -9,7 +9,10 @@ import com.google.android.gms.maps.model.MarkerOptions;
  */
 
 public class UserLocation extends SimpleLocation {
-    public String uid;
+
+    private static final float MARKER_COLOUR = BitmapDescriptorFactory.HUE_BLUE;
+
+    public final String uid;
 
     public UserLocation(Double lat, Double lng, String name, String uid) {
         this(new SimpleLocation(lat, lng, name), uid);
@@ -24,12 +27,12 @@ public class UserLocation extends SimpleLocation {
         return new LatLng(this.lat, this.lng);
     }
 
-    public MarkerOptions getMarkerOptions(float markerColour) {
+    public MarkerOptions getMarkerOptions() {
         // Create marker
         MarkerOptions newMarker = new MarkerOptions();
         newMarker.position(getLatLng());
         newMarker.title(name);
-        newMarker.icon(BitmapDescriptorFactory.defaultMarker(markerColour));
+        newMarker.icon(BitmapDescriptorFactory.defaultMarker(MARKER_COLOUR));
 
         return newMarker;
     }

@@ -43,7 +43,7 @@ public class UserHelper {
     public static void uploadUser(User u, OnCompleteListener caller) {
         DatabaseReference database = FirebaseDatabase.getInstance().getReference("users");
         database.child(getUid())
-                .setValue(user)
+                .setValue(u)
                 .addOnCompleteListener(caller);
     }
 
