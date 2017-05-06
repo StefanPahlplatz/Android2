@@ -1,6 +1,7 @@
 package com.android.eu.proximitymap.activities;
 
 import android.Manifest;
+import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.PackageManager;
@@ -16,6 +17,7 @@ import android.location.Location;
 import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Bundle;
+import android.os.Vibrator;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.design.widget.BottomNavigationView;
@@ -319,7 +321,8 @@ public class MapsActivity extends FragmentActivity implements
     }
 
     /**
-     * This method is triggered when the data at a child location has changed.
+     * This method is triggered when the data at a child location has changed. Update the marker
+     * location by calling addMarker().
      *
      * @param dataSnapshot An immutable snapshot of the data at the new data at the child location
      * @param s            The key name of sibling location ordered before the child.
@@ -468,6 +471,18 @@ public class MapsActivity extends FragmentActivity implements
     }
 
     /**
+     * Vibrates the phone for 400 ms.
+     */
+    private void vibrate() {
+        // Get instance of Vibrator from current Context
+        Vibrator v = (Vibrator) getSystemService(Context.VIBRATOR_SERVICE);
+
+        if (v.hasVibrator()) {
+            v.vibrate(400);
+        }
+    }
+
+    /**
      * Load a user's profile picture and set it as their marker icon.
      */
     private class MarkerIconTask extends AsyncTask<String, Void, Bitmap> {
@@ -508,6 +523,7 @@ public class MapsActivity extends FragmentActivity implements
 
         /**
          * Set the bitmap as marker image for the corresponding user.
+         *
          * @param bitmap user image.
          */
         @Override
@@ -528,7 +544,8 @@ public class MapsActivity extends FragmentActivity implements
 
         /**
          * Returns the passed bitmap as a circle with a border.
-         * @param bitmap to crop.
+         *
+         * @param bitmap       to crop.
          * @param borderSizePx size of the border.
          * @return new cropped bitmap with a border.
          */

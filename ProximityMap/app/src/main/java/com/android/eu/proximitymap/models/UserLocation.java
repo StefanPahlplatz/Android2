@@ -5,15 +5,14 @@ import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.MarkerOptions;
 
 /**
- * Created by stefa on 04/05/2017.
+ * Wrapper for SimpleLocation.
  */
 
 public class UserLocation extends SimpleLocation {
     public String uid;
 
     public UserLocation(Double lat, Double lng, String name, String uid) {
-        super(lat, lng, name);
-        this.uid = uid;
+        this(new SimpleLocation(lat, lng, name), uid);
     }
 
     public UserLocation(SimpleLocation simpleLocation, String uid) {
