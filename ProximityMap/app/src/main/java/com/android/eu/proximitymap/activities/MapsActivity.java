@@ -7,6 +7,7 @@ import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Canvas;
+import android.graphics.Color;
 import android.graphics.Paint;
 import android.graphics.PorterDuff;
 import android.graphics.PorterDuffXfermode;
@@ -37,7 +38,6 @@ import com.google.android.gms.location.LocationRequest;
 import com.google.android.gms.location.LocationServices;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
-import com.google.android.gms.maps.MapFragment;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.BitmapDescriptorFactory;
@@ -73,10 +73,11 @@ public class MapsActivity extends FragmentActivity implements
 
     private static final int NAV_HEIGHT = 190;
     private static final int INITIAL_ZOOM = 16;
-    private static final float ICON_SIZE = 32f;
+    private static final int MARKER_ICON_SIZE = 200;
+    private static final int MARKER_ICON_BORDER_SIZE = 28;
+    private static final float NAV_ICON_SIZE = 32f;
     private static final float MARKER_COLOUR = BitmapDescriptorFactory.HUE_BLUE;
-    private static final boolean NO_CUSTOM_ICON = false;
-    private static final boolean HAS_CUSTOM_ICON = false;
+    private static final int MARKER_ICON_BORDER_COLOUR = Color.WHITE;
 
 
     private GoogleMap mMap;
@@ -97,7 +98,7 @@ public class MapsActivity extends FragmentActivity implements
         bnve.enableAnimation(true);
         bnve.enableItemShiftingMode(true);
         bnve.setTextVisibility(false);
-        bnve.setIconSize(ICON_SIZE, ICON_SIZE);
+        bnve.setIconSize(NAV_ICON_SIZE, NAV_ICON_SIZE);
         bnve.setItemHeight(NAV_HEIGHT);
         bnve.setOnNavigationItemSelectedListener(this);
 
@@ -446,7 +447,7 @@ public class MapsActivity extends FragmentActivity implements
         if (newMarker != null) {
             Log.d("ICON", "Added default marker");
             mMarkers.put(userLocation, mMap.addMarker(newMarker));
-            mMarkers.get(userLocation).setTag(NO_CUSTOM_ICON);
+            mMarkers.get(userLocation).setVisible(false);
         }
 
         final DatabaseReference ref = FirebaseDatabase.getInstance().getReference("users")
@@ -466,8 +467,14 @@ public class MapsActivity extends FragmentActivity implements
         });
     }
 
+    /**
+     * Load a user's profile picture and set it as their marker icon.
+     */
     private class MarkerIconTask extends AsyncTask<String, Void, Bitmap> {
 
+        /**
+         * Uid of the user that belongs to the icon that is being loaded.
+         */
         private String uid;
 
         MarkerIconTask(String uid) {
@@ -485,9 +492,13 @@ public class MapsActivity extends FragmentActivity implements
                 URL url = new URL(params[0]);
 
                 Bitmap bmp = BitmapFactory.decodeStream(url.openConnection().getInputStream());
+                // TODO: Crop out the center, different case for hor and vert.
+                // Create a square bitmap.
                 bmp = Bitmap.createBitmap(bmp, 0, 0, bmp.getHeight(), bmp.getHeight());
-                bmp = Bitmap.createScaledBitmap(bmp, 200, 200, true);
-                bmp = getCroppedBitmap(bmp);
+                // Crop the bitmap to a 200 by 200 image.
+                bmp = Bitmap.createScaledBitmap(bmp, MARKER_ICON_SIZE, MARKER_ICON_SIZE, true);
+                // Get the bitmap as a circle.
+                bmp = getCircleBitmap(bmp, MARKER_ICON_BORDER_SIZE);
                 return bmp;
             } catch (IOException e) {
                 e.printStackTrace();
@@ -495,14 +506,18 @@ public class MapsActivity extends FragmentActivity implements
             return null;
         }
 
+        /**
+         * Set the bitmap as marker image for the corresponding user.
+         * @param bitmap user image.
+         */
         @Override
         protected void onPostExecute(Bitmap bitmap) {
             Log.d("ICON", "Loaded");
             for (UserLocation loc : mMarkers.keySet()) {
                 if (loc.uid.equals(uid)) {
-                    if (mMarkers.get(loc).getTag().equals(NO_CUSTOM_ICON)) {
+                    if (!mMarkers.get(loc).isVisible()) {
                         mMarkers.get(loc).setIcon(BitmapDescriptorFactory.fromBitmap(bitmap));
-                        mMarkers.get(loc).setTag(HAS_CUSTOM_ICON);
+                        mMarkers.get(loc).setVisible(true);
                         Log.d("ICON", "Assigned");
                     }
                     return;
@@ -511,25 +526,40 @@ public class MapsActivity extends FragmentActivity implements
             Log.d("ICON", "Couldn't find corresponding marker");
         }
 
-        private Bitmap getCroppedBitmap(Bitmap bitmap) {
-            Bitmap output = Bitmap.createBitmap(bitmap.getWidth(),
-                    bitmap.getHeight(), Bitmap.Config.ARGB_8888);
+        /**
+         * Returns the passed bitmap as a circle with a border.
+         * @param bitmap to crop.
+         * @param borderSizePx size of the border.
+         * @return new cropped bitmap with a border.
+         */
+        private Bitmap getCircleBitmap(Bitmap bitmap, int borderSizePx) {
+            int width = bitmap.getWidth();
+            int height = bitmap.getHeight();
+
+            // Create bitmap that has an alpha value.
+            Bitmap output = Bitmap.createBitmap(width, height, Bitmap.Config.ARGB_8888);
             Canvas canvas = new Canvas(output);
 
             final int color = 0xff424242;
             final Paint paint = new Paint();
-            final Rect rect = new Rect(0, 0, bitmap.getWidth(), bitmap.getHeight());
+            final Rect rect = new Rect(0, 0, width, height);
 
+            // Prepare canvas.
             paint.setAntiAlias(true);
             canvas.drawARGB(0, 0, 0, 0);
             paint.setColor(color);
-            // canvas.drawRoundRect(rectF, roundPx, roundPx, paint);
-            canvas.drawCircle(bitmap.getWidth() / 2, bitmap.getHeight() / 2,
-                    bitmap.getWidth() / 2, paint);
+            canvas.drawCircle(width / 2, height / 2, width / 2, paint);
+
+            // Draw bitmap.
             paint.setXfermode(new PorterDuffXfermode(PorterDuff.Mode.SRC_IN));
             canvas.drawBitmap(bitmap, rect, rect, paint);
-            //Bitmap _bmp = Bitmap.createScaledBitmap(output, 60, 60, false);
-            //return _bmp;
+
+            // Draw border.
+            paint.setColor(MARKER_ICON_BORDER_COLOUR);
+            paint.setStyle(Paint.Style.STROKE);
+            paint.setStrokeWidth((float) borderSizePx);
+            canvas.drawCircle(width / 2, height / 2, width / 2, paint);
+
             return output;
         }
     }
