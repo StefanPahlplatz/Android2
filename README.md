@@ -43,7 +43,7 @@ An implicit Intent has to be used for this.
 - [ ] The ability to filter what type of people you are interested in, using for example: age, gender,
 profession, etc. This automatically means that users have to enter this information into a
 profile.
-- [ ] The ability to see a picture of the persons near to you.
+- [x] The ability to see a picture of the persons near to you.
 - [ ] An arrow on the screen that shows the direction where a certain person is (using the
 compass sensor).
 - [ ] A chat functionality, that enables you to send messages to other users.
