@@ -31,7 +31,7 @@ An implicit Intent has to be used for this.
 - [x] Research what kind of server you will use (DB server, WCF server, webserver, GCM, or other).
 - [x] Communication with the server must be done asynchronously.
 - [x] Research how the distance between two points can be calculated.
-- [ ] Research how to play a sound, or generate a vibration.
+- [x] Research how to play a sound, or generate a vibration.
 - [ ] Test the app on some tablets and phones, using at least 3 different Android versions.
 - [ ] Deploy the app
 

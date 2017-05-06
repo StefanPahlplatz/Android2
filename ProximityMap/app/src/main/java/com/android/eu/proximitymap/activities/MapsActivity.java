@@ -5,16 +5,7 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.PackageManager;
-import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
-import android.graphics.Canvas;
-import android.graphics.Color;
-import android.graphics.Paint;
-import android.graphics.PorterDuff;
-import android.graphics.PorterDuffXfermode;
-import android.graphics.Rect;
 import android.location.Location;
-import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Vibrator;
@@ -30,9 +21,8 @@ import android.view.MenuItem;
 import android.widget.Toast;
 
 import com.android.eu.proximitymap.R;
+import com.android.eu.proximitymap.Utils.MarkerManager;
 import com.android.eu.proximitymap.models.SimpleLocation;
-import com.android.eu.proximitymap.models.User;
-import com.android.eu.proximitymap.models.UserLocation;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.location.LocationListener;
@@ -42,10 +32,7 @@ import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
-import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.LatLng;
-import com.google.android.gms.maps.model.Marker;
-import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.ChildEventListener;
@@ -55,10 +42,6 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 import com.ittianyu.bottomnavigationviewex.BottomNavigationViewEx;
-
-import java.io.IOException;
-import java.net.URL;
-import java.util.HashMap;
 
 /**
  * Map activity, default activity after logging in.
@@ -75,19 +58,13 @@ public class MapsActivity extends FragmentActivity implements
 
     private static final int NAV_HEIGHT = 190;
     private static final int INITIAL_ZOOM = 16;
-    private static final int MARKER_ICON_SIZE = 200;
-    private static final int MARKER_ICON_BORDER_SIZE = 28;
     private static final float NAV_ICON_SIZE = 32f;
-    private static final float MARKER_COLOUR = BitmapDescriptorFactory.HUE_BLUE;
-    private static final int MARKER_ICON_BORDER_COLOUR = Color.WHITE;
-
 
     private GoogleMap mMap;
     private GoogleApiClient mGoogleApiClient;
     private FirebaseUser mUser;
-    private HashMap<UserLocation, Marker> mMarkers;
     private boolean firstTimeZoom = false;
-
+    private MarkerManager markerManager;
     private DatabaseReference mDatabase;
 
     @Override
@@ -108,12 +85,13 @@ public class MapsActivity extends FragmentActivity implements
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
             checkLocationPermission();
         }
+
+        // Assign the current user.
         mUser = FirebaseAuth.getInstance().getCurrentUser();
         if (mUser == null) {
             Log.wtf("ToPkEk", "CaN't HaPpEn! ImPoSsIbLe StAte!");
             throw new NullPointerException("User not logged in???");
         }
-        mMarkers = new HashMap<>();
 
         // Firebase database position reference.
         mDatabase = FirebaseDatabase.getInstance().getReference("locations");
@@ -124,14 +102,13 @@ public class MapsActivity extends FragmentActivity implements
             public void onDataChange(DataSnapshot dataSnapshot) {
                 if (dataSnapshot.exists()) {
                     for (DataSnapshot snapshot : dataSnapshot.getChildren()) {
-                        addMarker(snapshot);
+                        markerManager.addMarker(snapshot);
                     }
                 }
             }
 
             @Override
             public void onCancelled(DatabaseError databaseError) {
-
             }
         });
 
@@ -175,6 +152,8 @@ public class MapsActivity extends FragmentActivity implements
             buildGoogleApiClient();
             mMap.setMyLocationEnabled(true);
         }
+
+        markerManager = new MarkerManager(mMap, mUser.getUid());
     }
 
     /**
@@ -317,7 +296,7 @@ public class MapsActivity extends FragmentActivity implements
      */
     @Override
     public void onChildAdded(DataSnapshot dataSnapshot, String s) {
-        addMarker(dataSnapshot);
+        markerManager.addMarker(dataSnapshot);
     }
 
     /**
@@ -330,7 +309,7 @@ public class MapsActivity extends FragmentActivity implements
      */
     @Override
     public void onChildChanged(DataSnapshot dataSnapshot, String s) {
-        addMarker(dataSnapshot);
+        markerManager.addMarker(dataSnapshot);
     }
 
     /**
@@ -341,13 +320,7 @@ public class MapsActivity extends FragmentActivity implements
      */
     @Override
     public void onChildRemoved(DataSnapshot dataSnapshot) {
-        String uid = dataSnapshot.getKey();
-        // Check and remove any duplicates.
-        for (UserLocation loc : mMarkers.keySet()) {
-            if (loc.uid.equals(uid)) {
-                mMarkers.remove(loc).remove();
-            }
-        }
+        markerManager.remove(dataSnapshot.getKey());
     }
 
     /**
@@ -425,52 +398,6 @@ public class MapsActivity extends FragmentActivity implements
     }
 
     /**
-     * Adds a marker to the map.
-     *
-     * @param dataSnapshot of the marker.
-     */
-    private void addMarker(DataSnapshot dataSnapshot) {
-        SimpleLocation simpleLocation = dataSnapshot.getValue(SimpleLocation.class);
-        final String uid = dataSnapshot.getKey();
-
-        // Don't place markers for yourself.
-        if (uid.equals(mUser.getUid())) {
-            return;
-        }
-
-        // Check and remove any duplicates.
-        for (UserLocation loc : mMarkers.keySet()) {
-            if (loc.uid.equals(uid)) {
-                mMarkers.remove(loc).remove();
-            }
-        }
-
-        UserLocation userLocation = new UserLocation(simpleLocation, uid);
-        MarkerOptions newMarker = userLocation.getMarkerOptions(MARKER_COLOUR);
-        if (newMarker != null) {
-            Log.d("ICON", "Added default marker");
-            mMarkers.put(userLocation, mMap.addMarker(newMarker));
-            mMarkers.get(userLocation).setVisible(false);
-        }
-
-        final DatabaseReference ref = FirebaseDatabase.getInstance().getReference("users")
-                .child(uid);
-        ref.addListenerForSingleValueEvent(new ValueEventListener() {
-            @Override
-            public void onDataChange(DataSnapshot dataSnapshot) {
-                Log.d("ICON", "onDataChange called");
-                User user = dataSnapshot.getValue(User.class);
-                new MarkerIconTask(uid).execute(user.picture);
-            }
-
-            @Override
-            public void onCancelled(DatabaseError databaseError) {
-                Log.e("ICON", "onCancelled called");
-            }
-        });
-    }
-
-    /**
      * Vibrates the phone for 400 ms.
      */
     private void vibrate() {
@@ -479,105 +406,6 @@ public class MapsActivity extends FragmentActivity implements
 
         if (v.hasVibrator()) {
             v.vibrate(400);
-        }
-    }
-
-    /**
-     * Load a user's profile picture and set it as their marker icon.
-     */
-    private class MarkerIconTask extends AsyncTask<String, Void, Bitmap> {
-
-        /**
-         * Uid of the user that belongs to the icon that is being loaded.
-         */
-        private String uid;
-
-        MarkerIconTask(String uid) {
-            this.uid = uid;
-        }
-
-        /**
-         * @param params at index 0 is the download link for the bitmap.
-         * @return bitmap or null.
-         */
-        @Override
-        protected Bitmap doInBackground(String... params) {
-            Log.d("ICON", "Loading the bitmap from " + params[0]);
-            try {
-                URL url = new URL(params[0]);
-
-                Bitmap bmp = BitmapFactory.decodeStream(url.openConnection().getInputStream());
-                // TODO: Crop out the center, different case for hor and vert.
-                // Create a square bitmap.
-                bmp = Bitmap.createBitmap(bmp, 0, 0, bmp.getHeight(), bmp.getHeight());
-                // Crop the bitmap to a 200 by 200 image.
-                bmp = Bitmap.createScaledBitmap(bmp, MARKER_ICON_SIZE, MARKER_ICON_SIZE, true);
-                // Get the bitmap as a circle.
-                bmp = getCircleBitmap(bmp, MARKER_ICON_BORDER_SIZE);
-                return bmp;
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-            return null;
-        }
-
-        /**
-         * Set the bitmap as marker image for the corresponding user.
-         *
-         * @param bitmap user image.
-         */
-        @Override
-        protected void onPostExecute(Bitmap bitmap) {
-            Log.d("ICON", "Loaded");
-            for (UserLocation loc : mMarkers.keySet()) {
-                if (loc.uid.equals(uid)) {
-                    if (!mMarkers.get(loc).isVisible()) {
-                        mMarkers.get(loc).setIcon(BitmapDescriptorFactory.fromBitmap(bitmap));
-                        mMarkers.get(loc).setVisible(true);
-                        Log.d("ICON", "Assigned");
-                    }
-                    return;
-                }
-            }
-            Log.d("ICON", "Couldn't find corresponding marker");
-        }
-
-        /**
-         * Returns the passed bitmap as a circle with a border.
-         *
-         * @param bitmap       to crop.
-         * @param borderSizePx size of the border.
-         * @return new cropped bitmap with a border.
-         */
-        private Bitmap getCircleBitmap(Bitmap bitmap, int borderSizePx) {
-            int width = bitmap.getWidth();
-            int height = bitmap.getHeight();
-
-            // Create bitmap that has an alpha value.
-            Bitmap output = Bitmap.createBitmap(width, height, Bitmap.Config.ARGB_8888);
-            Canvas canvas = new Canvas(output);
-
-            final int color = 0xff424242;
-            final Paint paint = new Paint();
-            final Rect rect = new Rect(0, 0, width, height);
-
-            // Prepare canvas.
-            paint.setAntiAlias(true);
-            canvas.drawARGB(0, 0, 0, 0);
-            paint.setColor(color);
-            canvas.drawCircle(width / 2, height / 2, width / 2, paint);
-
-            // Draw bitmap.
-            paint.setXfermode(new PorterDuffXfermode(PorterDuff.Mode.SRC_IN));
-            canvas.drawBitmap(bitmap, rect, rect, paint);
-
-            // Draw border.
-            paint.setColor(MARKER_ICON_BORDER_COLOUR);
-            paint.setStyle(Paint.Style.STROKE);
-            paint.setStrokeWidth((float) borderSizePx);
-            canvas.drawCircle(width / 2, height / 2, width / 2, paint);
-
-            return output;
         }
     }
 }

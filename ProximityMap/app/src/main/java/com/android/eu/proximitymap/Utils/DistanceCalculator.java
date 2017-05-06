@@ -2,8 +2,6 @@ package com.android.eu.proximitymap.Utils;
 
 import com.google.android.gms.maps.model.LatLng;
 
-import static java.lang.StrictMath.toIntExact;
-
 
 /**
  * Class to calculate the distance between two points.
@@ -15,6 +13,7 @@ public class DistanceCalculator {
      * This uses the ‘haversine’ formula to calculate the great-circle distance between two points
      * – that is, the shortest distance over the earth’s surface – giving an ‘as-the-crow-flies’
      * distance between the points
+     *
      * @param pos1 position one.
      * @param pos2 position two.
      * @return the distance between the points in meters.
@@ -30,7 +29,7 @@ public class DistanceCalculator {
                 Math.cos(φ1) * Math.cos(φ2) *
                         Math.sin(Δλ / 2) * Math.sin(Δλ / 2);
 
-        double c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a));
+        double c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
 
         return Math.round(R * c);
     }
