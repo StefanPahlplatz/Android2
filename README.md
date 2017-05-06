@@ -30,7 +30,7 @@ The app must run on a phone and on a tablet (using the available screen size opt
 An implicit Intent has to be used for this.
 - [x] Research what kind of server you will use (DB server, WCF server, webserver, GCM, or other).
 - [x] Communication with the server must be done asynchronously.
-- [ ] Research how the distance between two points can be calculated.
+- [x] Research how the distance between two points can be calculated.
 - [ ] Research how to play a sound, or generate a vibration.
 - [ ] Test the app on some tablets and phones, using at least 3 different Android versions.
 - [ ] Deploy the app
