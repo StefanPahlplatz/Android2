@@ -145,15 +145,15 @@ public class MarkerManager {
          */
         @Override
         protected Bitmap doInBackground(String... params) {
-            Bitmap bmp = null;
             try {
                 URL url = new URL(params[0]);
-                bmp = BitmapFactory.decodeStream(url.openConnection().getInputStream());
+                Bitmap bmp = BitmapFactory.decodeStream(url.openConnection().getInputStream());
+                BitmapActions bitmapActions = new BitmapActions();
+                return bitmapActions.adjust(bmp, true, true, true);
             } catch (IOException e) {
                 e.printStackTrace();
             }
-            BitmapActions bitmapActions = new BitmapActions();
-            return bitmapActions.adjust(bmp, true, true, true);
+            return null;
         }
 
         /**
@@ -177,7 +177,9 @@ public class MarkerManager {
                 Marker marker = mMarkers.get(getUserLocationByUid(uid));
 
                 if (!marker.isVisible()) {
-                    marker.setIcon(BitmapDescriptorFactory.fromBitmap(bitmap));
+                    if (bitmap != null) {
+                        marker.setIcon(BitmapDescriptorFactory.fromBitmap(bitmap));
+                    }
                     marker.setVisible(true);
                 }
             } catch (NullPointerException e) {

@@ -19,12 +19,21 @@ class BitmapActions {
     private static final int MARKER_ICON_BORDER_COLOUR = Color.WHITE;
 
     Bitmap adjust(Bitmap original, boolean crop, boolean circle, boolean border) {
-        // Create a square bitmap.
-        original = Bitmap.createBitmap(original, 0, 0, original.getHeight(), original.getHeight());
+        int width = original.getWidth();
+        int height = original.getHeight();
+
+        if (width > height) {
+            // Horizontal image.
+            original = Bitmap.createBitmap(original, (width - height) / 2, 0, original.getHeight(),
+                    original.getHeight());
+        } else {
+            // Vertical image.
+            original = Bitmap.createBitmap(original, 0, (height - width) / 2, original.getWidth(),
+                    original.getWidth());
+        }
 
         // Crop the bitmap to a 200 by 200 image.
         if (crop) {
-            // TODO: Crop out the center, different case for hor and vert.
             original = Bitmap.createScaledBitmap(original, MARKER_ICON_SIZE, MARKER_ICON_SIZE, true);
         }
 
