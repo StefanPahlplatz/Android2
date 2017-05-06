@@ -37,6 +37,7 @@ import com.google.android.gms.location.LocationRequest;
 import com.google.android.gms.location.LocationServices;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
+import com.google.android.gms.maps.MapFragment;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.BitmapDescriptorFactory;
@@ -157,6 +158,7 @@ public class MapsActivity extends FragmentActivity implements
     public void onMapReady(GoogleMap googleMap) {
         mMap = googleMap;
         mMap.setMapType(GoogleMap.MAP_TYPE_HYBRID);
+        mMap.getUiSettings().setMapToolbarEnabled(false);
 
         //Initialize Google Play Services
         if (android.os.Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
@@ -294,11 +296,13 @@ public class MapsActivity extends FragmentActivity implements
         super.onStop();
         //stop location updates
         if (mGoogleApiClient != null) {
+            Log.e("onStop", "Removing location updates.");
             LocationServices.FusedLocationApi.removeLocationUpdates(mGoogleApiClient, this);
         }
 
+        // TODO: Decide on this functionality.
         // Remove your own location entry.
-        mDatabase.getRoot().child("locations").child(mUser.getUid()).removeValue();
+        // mDatabase.getRoot().child("locations").child(mUser.getUid()).removeValue();
     }
 
     /**

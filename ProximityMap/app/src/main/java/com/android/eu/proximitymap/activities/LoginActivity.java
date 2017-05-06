@@ -44,6 +44,9 @@ public class LoginActivity extends AppCompatActivity {
         if (auth.getCurrentUser() != null) {
             // User is already signed in.
             Log.v("AUTH", "Logged in as " + auth.getCurrentUser().getEmail());
+
+            // TODO: Check if user profile data is complete, if not, start the details activity anyway.
+
             startActivity(MapsActivity.class);
         } else {
             // User is not yet signed in, start the FirebaseUI intent by calling
