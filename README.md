@@ -15,7 +15,7 @@
 - [x] Show also the location of the other users of this app with markers on the map, including their
       names (preferably use different colors, one for your own marker and another one for other
       users).
-- [ ] Give an audible or vibration signal when one of these users comes within 10 meters to your
+- [x] Give an audible or vibration signal when one of these users comes within 10 meters to your
       location; also show the name of that user in a notification.
 
 ## Subtasks
@@ -23,7 +23,7 @@
 > In order to achieve this, you will have to do the following subtasks:
 
 - [x] Set up GIT account; invite teacher as a Master; commit frequently.
-- [ ]  Define the screenflow, and design an appropriate GUI using the Material Design Guidelines.
+- [x]  Define the screenflow, and design an appropriate GUI using the Material Design Guidelines.
 The app must run on a phone and on a tablet (using the available screen size optimally).
 - [x] Research how to get your current location from the device.
 - [x] Research how a map can be shown (using Google Maps, or other app that can show a map).
@@ -32,7 +32,7 @@ An implicit Intent has to be used for this.
 - [x] Communication with the server must be done asynchronously.
 - [x] Research how the distance between two points can be calculated.
 - [x] Research how to play a sound, or generate a vibration.
-- [ ] Test the app on some tablets and phones, using at least 3 different Android versions.
+- [x] Test the app on some tablets and phones, using at least 3 different Android versions.
 - [ ] Deploy the app
 
 ## Extensions
