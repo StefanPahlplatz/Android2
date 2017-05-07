@@ -19,7 +19,9 @@ import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 
 import java.io.IOException;
+import java.net.MalformedURLException;
 import java.net.URL;
+import java.util.ConcurrentModificationException;
 import java.util.HashMap;
 
 /**
@@ -27,6 +29,8 @@ import java.util.HashMap;
  */
 
 public class MarkerManager {
+
+    private static final String TAG = MarkerManager.class.getSimpleName();
 
     private String mUid;
     private HashMap<UserLocation, Marker> mMarkers;
@@ -59,10 +63,14 @@ public class MarkerManager {
      * @param key to remove.
      */
     public void remove(String key) {
-        for (UserLocation loc : mMarkers.keySet()) {
-            if (loc.uid.equals(key)) {
-                mMarkers.remove(loc).remove();
+        try {
+            for (UserLocation loc : mMarkers.keySet()) {
+                if (loc.uid.equals(key)) {
+                    mMarkers.remove(loc).remove();
+                }
             }
+        } catch (ConcurrentModificationException ex) {
+            Log.e(TAG + ".remove", "ConcurrentModificationException");
         }
     }
 
@@ -150,6 +158,8 @@ public class MarkerManager {
                 Bitmap bmp = BitmapFactory.decodeStream(url.openConnection().getInputStream());
                 BitmapActions bitmapActions = new BitmapActions();
                 return bitmapActions.adjust(bmp, true, true, true);
+            } catch (MalformedURLException e) {
+                Log.e(TAG + ".doInBackground", "MalformedURLException, no protocol found");
             } catch (IOException e) {
                 e.printStackTrace();
             }

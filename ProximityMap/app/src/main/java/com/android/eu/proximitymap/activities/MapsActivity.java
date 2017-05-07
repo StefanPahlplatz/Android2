@@ -2,33 +2,23 @@ package com.android.eu.proximitymap.activities;
 
 import android.Manifest;
 import android.content.Context;
-import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.PackageManager;
-import android.location.Location;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Vibrator;
 import android.support.annotation.NonNull;
-import android.support.annotation.Nullable;
 import android.support.design.widget.BottomNavigationView;
-import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.FragmentActivity;
 import android.support.v4.content.ContextCompat;
-import android.support.v7.app.AlertDialog;
 import android.util.Log;
 import android.view.MenuItem;
 import android.widget.Toast;
 
 import com.android.eu.proximitymap.R;
+import com.android.eu.proximitymap.Utils.LocationHelper;
 import com.android.eu.proximitymap.Utils.MarkerManager;
 import com.android.eu.proximitymap.Utils.PermissionHelper;
-import com.android.eu.proximitymap.models.SimpleLocation;
-import com.google.android.gms.common.ConnectionResult;
-import com.google.android.gms.common.api.GoogleApiClient;
-import com.google.android.gms.location.LocationListener;
-import com.google.android.gms.location.LocationRequest;
-import com.google.android.gms.location.LocationServices;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
@@ -51,24 +41,21 @@ import com.ittianyu.bottomnavigationviewex.BottomNavigationViewEx;
  */
 public class MapsActivity extends FragmentActivity implements
         OnMapReadyCallback,
-        GoogleApiClient.ConnectionCallbacks,
-        GoogleApiClient.OnConnectionFailedListener,
-        LocationListener,
         ChildEventListener,
-        BottomNavigationView.OnNavigationItemSelectedListener {
+        BottomNavigationView.OnNavigationItemSelectedListener,
+        LocationHelper.LocationListener {
 
     private static final int NAV_HEIGHT = 190;
     private static final int INITIAL_ZOOM = 16;
     private static final float NAV_ICON_SIZE = 32f;
     private static final int MY_PERMISSIONS_REQUEST_LOCATION = 99;
 
-    private GoogleMap mMap;
-    private GoogleApiClient mGoogleApiClient;
-    private FirebaseUser mUser;
     private boolean firstTimeZoom = false;
+    private GoogleMap mMap;
+    private FirebaseUser mUser;
     private MarkerManager markerManager;
-    private DatabaseReference mDatabase;
     private PermissionHelper permissionHelper;
+    private LocationHelper locationHelper;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -96,7 +83,7 @@ public class MapsActivity extends FragmentActivity implements
         }
 
         // Firebase database position reference.
-        mDatabase = FirebaseDatabase.getInstance().getReference("locations");
+        DatabaseReference mDatabase = FirebaseDatabase.getInstance().getReference("locations");
 
         // Get existing markers.
         mDatabase.addListenerForSingleValueEvent(new ValueEventListener() {
@@ -121,6 +108,8 @@ public class MapsActivity extends FragmentActivity implements
         SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager()
                 .findFragmentById(R.id.map);
         mapFragment.getMapAsync(this);
+
+        locationHelper = new LocationHelper(this, mUser.getUid(), mUser.getDisplayName());
 
         // TODO: Clickable markers.
         // http://stackoverflow.com/questions/14226453/google-maps-api-v2-how-to-make-markers-clickable
@@ -147,11 +136,11 @@ public class MapsActivity extends FragmentActivity implements
             if (ContextCompat.checkSelfPermission(this,
                     Manifest.permission.ACCESS_FINE_LOCATION)
                     == PackageManager.PERMISSION_GRANTED) {
-                buildGoogleApiClient();
+                locationHelper.buildGoogleApiClient();
                 mMap.setMyLocationEnabled(true);
             }
         } else {
-            buildGoogleApiClient();
+            locationHelper.buildGoogleApiClient();
             mMap.setMyLocationEnabled(true);
         }
 
@@ -185,61 +174,15 @@ public class MapsActivity extends FragmentActivity implements
 
     /**
      * Called when the location has changed.
-     *
-     * @param location The new location, as a Location object.
      */
     @Override
-    public void onLocationChanged(Location location) {
-        LatLng latLng = new LatLng(location.getLatitude(), location.getLongitude());
-
+    public void updateLocation(LatLng latLng) {
         //move map camera
         if (!firstTimeZoom) {
             mMap.moveCamera(CameraUpdateFactory.newLatLng(latLng));
             mMap.animateCamera(CameraUpdateFactory.zoomTo(INITIAL_ZOOM));
             firstTimeZoom = true;
         }
-
-        // Update location in the database.
-        updateLocation(mUser.getUid(), latLng, mUser.getDisplayName());
-    }
-
-    @Override
-    public void onConnected(@Nullable Bundle bundle) {
-        LocationRequest mLocationRequest = new LocationRequest();
-        mLocationRequest.setInterval(1000);
-        mLocationRequest.setFastestInterval(1000);
-        mLocationRequest.setPriority(LocationRequest.PRIORITY_BALANCED_POWER_ACCURACY);
-
-        if (ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) ==
-                PackageManager.PERMISSION_GRANTED) {
-            LocationServices.FusedLocationApi.requestLocationUpdates(
-                    mGoogleApiClient, mLocationRequest, this);
-        } else {
-            Log.e("PERMISSIONS", "USER DENIED LOCATION PERMISSION");
-            DialogInterface.OnClickListener dialogClickListener = new DialogInterface.OnClickListener() {
-                @Override
-                public void onClick(DialogInterface dialog, int which) {
-                    switch (which) {
-                        case DialogInterface.BUTTON_POSITIVE:
-                            finish();
-                            break;
-                    }
-                }
-            };
-            // No picture selected, sure you want to continue?
-            AlertDialog.Builder builder = new AlertDialog.Builder(this);
-            builder.setMessage("You can't use this application without GPS permissions")
-                    .setPositiveButton("I understand", dialogClickListener).show();
-        }
-    }
-
-    @Override
-    public void onConnectionSuspended(int i) { // Do nothing
-    }
-
-    @Override
-    public void onConnectionFailed(@NonNull ConnectionResult connectionResult) {
-        Toast.makeText(this, "Couldn't connect to the servers.", Toast.LENGTH_SHORT).show();
     }
 
     @SuppressWarnings("MissingPermission")
@@ -249,12 +192,9 @@ public class MapsActivity extends FragmentActivity implements
         switch (requestCode) {
             case MY_PERMISSIONS_REQUEST_LOCATION: {
                 if (permissionHelper.hasLocationPermission()) {
-                    if (mGoogleApiClient == null) {
-                        buildGoogleApiClient();
-                    }
+                    locationHelper.buildGoogleApiClient();
                     mMap.setMyLocationEnabled(true);
                 } else {
-                    // Permission denied, Disable the functionality that depends on this permission.
                     Toast.makeText(this, "Permission denied", Toast.LENGTH_LONG).show();
                 }
             }
@@ -268,11 +208,7 @@ public class MapsActivity extends FragmentActivity implements
     @Override
     protected void onStop() {
         super.onStop();
-        //stop location updates
-        if (mGoogleApiClient != null) {
-            Log.e("onStop", "Removing location updates.");
-            LocationServices.FusedLocationApi.removeLocationUpdates(mGoogleApiClient, this);
-        }
+        locationHelper.dispose();
 
         // TODO: Decide on this functionality.
         // Remove your own location entry.
@@ -336,26 +272,6 @@ public class MapsActivity extends FragmentActivity implements
     @Override
     public void onCancelled(DatabaseError databaseError) {
         Log.d("DATABASE", databaseError.getMessage() + databaseError.getDetails());
-    }
-
-    private synchronized void buildGoogleApiClient() {
-        mGoogleApiClient = new GoogleApiClient.Builder(this)
-                .addConnectionCallbacks(this)
-                .addOnConnectionFailedListener(this)
-                .addApi(LocationServices.API)
-                .build();
-        mGoogleApiClient.connect();
-    }
-
-    /**
-     * Updates the location of the current mUser in the database.
-     *
-     * @param userId the userId of the current mUser.
-     * @param latLng current coordinates.
-     */
-    private void updateLocation(String userId, LatLng latLng, String name) {
-        SimpleLocation loc = new SimpleLocation(latLng.latitude, latLng.longitude, name);
-        mDatabase.child(userId).setValue(loc);
     }
 
     /**

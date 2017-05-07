@@ -11,8 +11,6 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.provider.MediaStore;
 import android.support.annotation.NonNull;
-import android.support.v4.app.ActivityCompat;
-import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
@@ -74,6 +72,8 @@ public class PicturePickerActivity extends AppCompatActivity implements
 
         findViewById(R.id.button_pick_image).setOnClickListener(this);
         findViewById(R.id.button_next).setOnClickListener(this);
+
+        permissionHelper = new PermissionHelper(this);
     }
 
     /**

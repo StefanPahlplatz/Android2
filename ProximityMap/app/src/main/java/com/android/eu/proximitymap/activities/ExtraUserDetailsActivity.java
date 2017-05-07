@@ -42,6 +42,8 @@ public class ExtraUserDetailsActivity extends AppCompatActivity implements
 
     /**
      * // TODO: Add textwatcher for validation as shown here: http://stackoverflow.com/questions/33072569/best-practice-input-validation-android
+     *
+     * // TODO: Make uploading the data async.
      */
     @Override
     protected void onCreate(Bundle savedInstanceState) {
