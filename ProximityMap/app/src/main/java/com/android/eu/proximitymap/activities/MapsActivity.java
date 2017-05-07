@@ -1,6 +1,7 @@
 package com.android.eu.proximitymap.activities;
 
 import android.Manifest;
+import android.app.Service;
 import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
@@ -19,6 +20,7 @@ import com.android.eu.proximitymap.R;
 import com.android.eu.proximitymap.Utils.LocationHelper;
 import com.android.eu.proximitymap.Utils.MarkerManager;
 import com.android.eu.proximitymap.Utils.PermissionHelper;
+import com.android.eu.proximitymap.services.LocationService;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
@@ -56,6 +58,7 @@ public class MapsActivity extends FragmentActivity implements
     private MarkerManager markerManager;
     private PermissionHelper permissionHelper;
     private LocationHelper locationHelper;
+    private LatLng lastLocation;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -183,6 +186,7 @@ public class MapsActivity extends FragmentActivity implements
             mMap.animateCamera(CameraUpdateFactory.zoomTo(INITIAL_ZOOM));
             firstTimeZoom = true;
         }
+        lastLocation = latLng;
     }
 
     @SuppressWarnings("MissingPermission")
@@ -199,7 +203,6 @@ public class MapsActivity extends FragmentActivity implements
                 }
             }
         }
-
     }
 
     /**
@@ -209,7 +212,7 @@ public class MapsActivity extends FragmentActivity implements
     protected void onStop() {
         super.onStop();
         locationHelper.dispose();
-
+        startLocationService();
         // TODO: Decide on this functionality.
         // Remove your own location entry.
         // mDatabase.getRoot().child("locations").child(mUser.getUid()).removeValue();
@@ -275,14 +278,14 @@ public class MapsActivity extends FragmentActivity implements
     }
 
     /**
-     * Vibrates the phone for 400 ms.
+     * Start the location service if it's not already running.
      */
-    private void vibrate() {
-        // Get instance of Vibrator from current Context
-        Vibrator v = (Vibrator) getSystemService(Context.VIBRATOR_SERVICE);
-
-        if (v.hasVibrator()) {
-            v.vibrate(400);
+    private void startLocationService() {
+        if (!LocationService.RUNNING) {
+            Intent intent = new Intent(this, LocationService.class);
+            intent.putExtra("lat", lastLocation != null ? lastLocation.latitude : 0);
+            intent.putExtra("lng", lastLocation != null ? lastLocation.longitude : 0);
+            startService(intent);
         }
     }
 }

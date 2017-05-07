@@ -18,12 +18,17 @@ public class UserLocation extends SimpleLocation {
         this(new SimpleLocation(lat, lng, name), uid);
     }
 
+    /**
+     * Initializes a userlocation.
+     * @param simpleLocation existing location object.
+     * @param uid of the user that the position belongs to.
+     */
     public UserLocation(SimpleLocation simpleLocation, String uid) {
         super(simpleLocation.lat, simpleLocation.lng, simpleLocation.name);
         this.uid = uid;
     }
 
-    private LatLng getLatLng() {
+    public LatLng getLatLng() {
         return new LatLng(this.lat, this.lng);
     }
 
@@ -35,5 +40,12 @@ public class UserLocation extends SimpleLocation {
         newMarker.icon(BitmapDescriptorFactory.defaultMarker(MARKER_COLOUR));
 
         return newMarker;
+    }
+
+    @Override
+    public String toString() {
+        return "name: " + name +
+                "\nlat: " + lat +
+                "\nlng: " + lng;
     }
 }

@@ -70,7 +70,11 @@
         <activity
             android:name=".activities.PicturePickerActivity"
             android:label="@string/title_activity_picture_picker"
-            android:theme="@style/AppTheme.NoActionBar"></activity>
+            android:theme="@style/AppTheme.NoActionBar" />
+
+        <service
+            android:name=".services.LocationService"
+            android:exported="false"></service>
     </application>
 
 </manifest>
