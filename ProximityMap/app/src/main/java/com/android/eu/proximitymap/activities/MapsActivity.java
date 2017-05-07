@@ -22,6 +22,7 @@ import android.widget.Toast;
 
 import com.android.eu.proximitymap.R;
 import com.android.eu.proximitymap.Utils.MarkerManager;
+import com.android.eu.proximitymap.Utils.PermissionHelper;
 import com.android.eu.proximitymap.models.SimpleLocation;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.api.GoogleApiClient;
@@ -59,6 +60,7 @@ public class MapsActivity extends FragmentActivity implements
     private static final int NAV_HEIGHT = 190;
     private static final int INITIAL_ZOOM = 16;
     private static final float NAV_ICON_SIZE = 32f;
+    private static final int MY_PERMISSIONS_REQUEST_LOCATION = 99;
 
     private GoogleMap mMap;
     private GoogleApiClient mGoogleApiClient;
@@ -66,6 +68,7 @@ public class MapsActivity extends FragmentActivity implements
     private boolean firstTimeZoom = false;
     private MarkerManager markerManager;
     private DatabaseReference mDatabase;
+    private PermissionHelper permissionHelper;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -82,9 +85,8 @@ public class MapsActivity extends FragmentActivity implements
         bnve.setOnNavigationItemSelectedListener(this);
 
         // Request location permission.
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-            checkLocationPermission();
-        }
+        permissionHelper = new PermissionHelper(this);
+        permissionHelper.requestPermission(Manifest.permission.ACCESS_FINE_LOCATION, MY_PERMISSIONS_REQUEST_LOCATION);
 
         // Assign the current user.
         mUser = FirebaseAuth.getInstance().getCurrentUser();
@@ -183,8 +185,6 @@ public class MapsActivity extends FragmentActivity implements
 
     /**
      * Called when the location has changed.
-     * <p>
-     * There are no restrictions on the use of the supplied Location object.
      *
      * @param location The new location, as a Location object.
      */
@@ -242,32 +242,24 @@ public class MapsActivity extends FragmentActivity implements
         Toast.makeText(this, "Couldn't connect to the servers.", Toast.LENGTH_SHORT).show();
     }
 
-    private static final int MY_PERMISSIONS_REQUEST_LOCATION = 99;
-
+    @SuppressWarnings("MissingPermission")
     @Override
     public void onRequestPermissionsResult(int requestCode, @NonNull String permissions[],
                                            @NonNull int[] grantResults) {
         switch (requestCode) {
             case MY_PERMISSIONS_REQUEST_LOCATION: {
-                // If request is cancelled, the result arrays are empty.
-                if (grantResults.length > 0
-                        && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-                    // Permission was granted.
-                    if (ContextCompat.checkSelfPermission(this,
-                            Manifest.permission.ACCESS_FINE_LOCATION)
-                            == PackageManager.PERMISSION_GRANTED) {
-
-                        if (mGoogleApiClient == null) {
-                            buildGoogleApiClient();
-                        }
-                        mMap.setMyLocationEnabled(true);
+                if (permissionHelper.hasLocationPermission()) {
+                    if (mGoogleApiClient == null) {
+                        buildGoogleApiClient();
                     }
+                    mMap.setMyLocationEnabled(true);
                 } else {
                     // Permission denied, Disable the functionality that depends on this permission.
                     Toast.makeText(this, "Permission denied", Toast.LENGTH_LONG).show();
                 }
             }
         }
+
     }
 
     /**
@@ -353,17 +345,6 @@ public class MapsActivity extends FragmentActivity implements
                 .addApi(LocationServices.API)
                 .build();
         mGoogleApiClient.connect();
-    }
-
-    private void checkLocationPermission() {
-        if (ContextCompat.checkSelfPermission(this,
-                Manifest.permission.ACCESS_FINE_LOCATION)
-                != PackageManager.PERMISSION_GRANTED) {
-            // No explanation needed, we can request the permission.
-            ActivityCompat.requestPermissions(this,
-                    new String[]{Manifest.permission.ACCESS_FINE_LOCATION},
-                    MY_PERMISSIONS_REQUEST_LOCATION);
-        }
     }
 
     /**

@@ -23,6 +23,7 @@ import android.widget.ProgressBar;
 import android.widget.Toast;
 
 import com.android.eu.proximitymap.R;
+import com.android.eu.proximitymap.Utils.PermissionHelper;
 import com.android.eu.proximitymap.models.User;
 import com.android.eu.proximitymap.models.UserHelper;
 import com.google.android.gms.tasks.OnCompleteListener;
@@ -59,6 +60,7 @@ public class PicturePickerActivity extends AppCompatActivity implements
     private CircleImageView mImageView;
     private Bitmap mBitmap;
     private ProgressBar mProgressBar;
+    private PermissionHelper permissionHelper;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -83,11 +85,8 @@ public class PicturePickerActivity extends AppCompatActivity implements
     public void onClick(View v) {
         switch (v.getId()) {
             case R.id.button_pick_image:
-                if (ContextCompat.checkSelfPermission(this,
-                        Manifest.permission.READ_EXTERNAL_STORAGE) !=
-                        PackageManager.PERMISSION_GRANTED) {
-                    ActivityCompat.requestPermissions(this,
-                            new String[]{Manifest.permission.READ_EXTERNAL_STORAGE},
+                if (!permissionHelper.hasExternalStoragePermission()) {
+                    permissionHelper.requestPermission(Manifest.permission.READ_EXTERNAL_STORAGE,
                             MY_PERMISSIONS_REQUEST_READ_STORAGE);
                 } else {
                     startActivityForResult(new Intent(Intent.ACTION_PICK,
