@@ -194,7 +194,9 @@ public class PicturePickerActivity extends AppCompatActivity implements
                     .setNegativeButton("No", dialogClickListener).show();
         } else {
             // MapActivity is started by a method called by uploadPicture()
-            uploadPicture();
+            if (mBitmap != null) {
+                uploadPicture();
+            }
         }
     }
 
