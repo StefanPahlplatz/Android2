@@ -153,38 +153,8 @@ public class SettingsActivity extends AppCompatPreferenceActivity {
      */
     protected boolean isValidFragment(String fragmentName) {
         return PreferenceFragment.class.getName().equals(fragmentName)
-                || AppearancePreferenceFragment.class.getName().equals(fragmentName)
                 || AccountPreferenceFragment.class.getName().equals(fragmentName)
                 || LocationPreferenceFragment.class.getName().equals(fragmentName);
-    }
-
-    /**
-     * This fragment shows general preferences only. It is used when the
-     * activity is showing a two-pane settings UI.
-     * <p>
-     * TODO: Implement the settings of this fragment in the mapactivity.
-     */
-    @TargetApi(Build.VERSION_CODES.HONEYCOMB)
-    public static class AppearancePreferenceFragment extends PreferenceFragment {
-        @Override
-        public void onCreate(Bundle savedInstanceState) {
-            super.onCreate(savedInstanceState);
-            addPreferencesFromResource(R.xml.pref_appearance);
-            setHasOptionsMenu(true);
-
-            // TODO: Check default value of marker colour on clean device to make sure it has a value.
-            bindPreferenceSummaryToValue(findPreference("marker_colours"));
-        }
-
-        @Override
-        public boolean onOptionsItemSelected(MenuItem item) {
-            int id = item.getItemId();
-            if (id == android.R.id.home) {
-                startActivity(new Intent(getActivity(), SettingsActivity.class));
-                return true;
-            }
-            return super.onOptionsItemSelected(item);
-        }
     }
 
     @TargetApi(Build.VERSION_CODES.HONEYCOMB)
