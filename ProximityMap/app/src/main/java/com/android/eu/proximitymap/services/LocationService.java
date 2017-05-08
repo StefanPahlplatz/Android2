@@ -8,6 +8,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.os.IBinder;
 import android.os.Vibrator;
+import android.preference.PreferenceManager;
 import android.support.v4.app.NotificationCompat;
 import android.util.Log;
 
@@ -36,8 +37,10 @@ public class LocationService extends Service implements LocationHelper.LocationL
     private static final String TAG = LocationService.class.getSimpleName();
 
     public static boolean RUNNING;
-    private LatLng lastLocation;
-    private ArrayList<String> usersInVicinity;
+    private LatLng mLastLocation;
+    private ArrayList<String> mUsersInVicinity;
+    private boolean mNotify;
+    private int mMinRange;
 
     @Override
     public void onCreate() {
@@ -46,80 +49,90 @@ public class LocationService extends Service implements LocationHelper.LocationL
 
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
-
         Log.v(TAG, "onStartCommand");
+
+        // Set the service to the running state.
         RUNNING = true;
 
         // Get last position from intent.
         double lat = intent.getExtras().getDouble("lat");
         double lng = intent.getExtras().getDouble("lng");
-        lastLocation = new LatLng(lat, lng);
-        usersInVicinity = new ArrayList<>();
 
-        // Create calculator
+        // Initialize variables.
+        mLastLocation = new LatLng(lat, lng);
+        mUsersInVicinity = new ArrayList<>();
+        mMinRange = Integer.parseInt(PreferenceManager.getDefaultSharedPreferences(LocationService.this)
+                .getString("notification_in_x_meters", "10"));
+        mNotify = PreferenceManager.getDefaultSharedPreferences(LocationService.this)
+                .getBoolean("notify_when_close", true);
         final DistanceCalculator calc = new DistanceCalculator();
-
         final FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
+
         if (user == null) {
+            // If the user is null, stop the service.
             stopSelf();
         } else {
+            // Create a location helper.
             LocationHelper locationHelper = new LocationHelper(this, user.getUid(), user.getDisplayName());
             locationHelper.buildGoogleApiClient();
 
-            DatabaseReference database = FirebaseDatabase.getInstance().getReference("locations");
-            database.addChildEventListener(new ChildEventListener() {
-                @Override
-                public void onChildAdded(DataSnapshot dataSnapshot, String s) {
-
-                }
-
-                @Override
-                public void onChildChanged(DataSnapshot dataSnapshot, String s) {
-                    // Convert dataSnapShot to a location.
-                    SimpleLocation simpleLoc = dataSnapshot.getValue(SimpleLocation.class);
-                    UserLocation loc = new UserLocation(simpleLoc, dataSnapshot.getKey());
-
-                    // If it's not the own user location that changed.
-                    if (!loc.uid.equals(user.getUid())) {
-                        // If the other user is closer than x meters.
-                        if (calc.getDistance(lastLocation, loc.getLatLng()) < 50) { //TODO: Make setting.
-                            if (!usersInVicinity.contains(loc.uid)) {
-                                usersInVicinity.add(loc.uid);
-                                vibrate();
-                                addNotification(loc.name);
-                            }
-                        } else {
-                            if (usersInVicinity.contains(loc.uid)) {
-                                usersInVicinity.remove(loc.uid);
-                            }
-                        }
-                        Log.v(TAG + ".onDataChange", loc.toString());
+            if (mNotify) {
+                // Listen for location changes of other users.
+                DatabaseReference database = FirebaseDatabase.getInstance().getReference("locations");
+                database.addChildEventListener(new ChildEventListener() {
+                    @Override
+                    public void onChildAdded(DataSnapshot dataSnapshot, String s) {
                     }
-                }
 
-                @Override
-                public void onChildRemoved(DataSnapshot dataSnapshot) {
+                    @Override
+                    public void onChildChanged(DataSnapshot dataSnapshot, String s) {
+                        // Convert dataSnapShot to a location.
+                        SimpleLocation simpleLoc = dataSnapshot.getValue(SimpleLocation.class);
+                        UserLocation loc = new UserLocation(simpleLoc, dataSnapshot.getKey());
 
-                }
+                        // If it's not the own user location that changed.
+                        if (!loc.uid.equals(user.getUid())) {
+                            // If the other user is closer than x meters.
+                            if (calc.getDistance(mLastLocation, loc.getLatLng()) < mMinRange) {
+                                // If the user wasn't in range before.
+                                if (!mUsersInVicinity.contains(loc.uid)) {
+                                    mUsersInVicinity.add(loc.uid);
+                                    vibrate();
+                                    addNotification(loc.name);
+                                }
+                            } else {
+                                // If the user left your close range, remove him from the list.
+                                if (mUsersInVicinity.contains(loc.uid)) {
+                                    mUsersInVicinity.remove(loc.uid);
+                                }
+                            }
+                            Log.v(TAG + ".onDataChange", loc.toString());
+                        }
+                    }
 
-                @Override
-                public void onChildMoved(DataSnapshot dataSnapshot, String s) {
+                    @Override
+                    public void onChildRemoved(DataSnapshot dataSnapshot) {
 
-                }
+                    }
 
-                @Override
-                public void onCancelled(DatabaseError databaseError) {
+                    @Override
+                    public void onChildMoved(DataSnapshot dataSnapshot, String s) {
 
-                }
-            });
+                    }
 
+                    @Override
+                    public void onCancelled(DatabaseError databaseError) {
+
+                    }
+                });
+            }
         }
         return START_STICKY;
     }
 
     @Override
     public void updateLocation(LatLng latLng) {
-        lastLocation = latLng;
+        mLastLocation = latLng;
     }
 
     @Override

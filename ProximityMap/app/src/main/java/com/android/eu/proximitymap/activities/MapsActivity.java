@@ -8,6 +8,7 @@ import android.content.pm.PackageManager;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Vibrator;
+import android.preference.PreferenceManager;
 import android.support.annotation.NonNull;
 import android.support.design.widget.BottomNavigationView;
 import android.support.v4.app.FragmentActivity;
@@ -281,11 +282,17 @@ public class MapsActivity extends FragmentActivity implements
      * Start the location service if it's not already running.
      */
     private void startLocationService() {
-        if (!LocationService.RUNNING) {
-            Intent intent = new Intent(this, LocationService.class);
-            intent.putExtra("lat", lastLocation != null ? lastLocation.latitude : 0);
-            intent.putExtra("lng", lastLocation != null ? lastLocation.longitude : 0);
+        Intent intent = new Intent(this, LocationService.class);
+        intent.putExtra("lat", lastLocation != null ? lastLocation.latitude : 0);
+        intent.putExtra("lng", lastLocation != null ? lastLocation.longitude : 0);
+
+        boolean keepActive = PreferenceManager.getDefaultSharedPreferences(this).getBoolean("keep_active", true);
+        boolean running = LocationService.RUNNING;
+
+        if (!running && keepActive) {
             startService(intent);
+        } else if (running && !keepActive) {
+            stopService(intent);
         }
     }
 }

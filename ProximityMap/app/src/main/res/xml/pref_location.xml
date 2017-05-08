@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="utf-8"?>
+<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
+    <SwitchPreference
+        android:defaultValue="true"
+        android:key="keep_active"
+        android:summary="Keep the application syncing your location and notifying you when someone enters your proximity."
+        android:title="Background service" />
+
+    <SwitchPreference
+        android:defaultValue="false"
+        android:dependency="keep_active"
+        android:key="notify_when_close"
+        android:summary="Show a marker at your current location."
+        android:title="Receive notifications when someone enters your proximity" />
+
+    <ListPreference
+        android:defaultValue="1"
+        android:dependency="notify_when_close"
+        android:entries="@array/pref_location_notification_meters"
+        android:entryValues="@array/pref_location_notification_meters"
+        android:key="notification_in_x_meters"
+        android:negativeButtonText="@null"
+        android:positiveButtonText="@null"
+        android:title="Notification when closer than:" />
+
+
+</PreferenceScreen>

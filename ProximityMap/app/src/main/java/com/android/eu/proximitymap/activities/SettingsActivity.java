@@ -154,13 +154,14 @@ public class SettingsActivity extends AppCompatPreferenceActivity {
     protected boolean isValidFragment(String fragmentName) {
         return PreferenceFragment.class.getName().equals(fragmentName)
                 || AppearancePreferenceFragment.class.getName().equals(fragmentName)
-                || AccountPreferenceFragment.class.getName().equals(fragmentName);
+                || AccountPreferenceFragment.class.getName().equals(fragmentName)
+                || LocationPreferenceFragment.class.getName().equals(fragmentName);
     }
 
     /**
      * This fragment shows general preferences only. It is used when the
      * activity is showing a two-pane settings UI.
-     *
+     * <p>
      * TODO: Implement the settings of this fragment in the mapactivity.
      */
     @TargetApi(Build.VERSION_CODES.HONEYCOMB)
@@ -186,10 +187,32 @@ public class SettingsActivity extends AppCompatPreferenceActivity {
         }
     }
 
+    @TargetApi(Build.VERSION_CODES.HONEYCOMB)
+    public static class LocationPreferenceFragment extends PreferenceFragment {
+        @Override
+        public void onCreate(Bundle savedInstanceState) {
+            super.onCreate(savedInstanceState);
+            addPreferencesFromResource(R.xml.pref_location);
+            setHasOptionsMenu(true);
+
+            bindPreferenceSummaryToValue(findPreference("notification_in_x_meters"));
+        }
+
+        @Override
+        public boolean onOptionsItemSelected(MenuItem item) {
+            int id = item.getItemId();
+            if (id == android.R.id.home) {
+                startActivity(new Intent(getActivity(), SettingsActivity.class));
+                return true;
+            }
+            return super.onOptionsItemSelected(item);
+        }
+    }
+
     /**
      * This fragment shows notification preferences only. It is used when the
      * activity is showing a two-pane settings UI.
-     *
+     * <p>
      * // TODO: Handle the FirebaseAuthRecentLoginRequiredException error. See https://firebase.google.com/docs/auth/android/manage-users#re-authenticate_a_user
      */
     @TargetApi(Build.VERSION_CODES.HONEYCOMB)
@@ -215,14 +238,14 @@ public class SettingsActivity extends AppCompatPreferenceActivity {
                 public boolean onPreferenceClick(final Preference preference) {
                     DialogInterface.OnClickListener dialogClickListener =
                             new DialogInterface.OnClickListener() {
-                        @Override
-                        public void onClick(final DialogInterface dialog, final int which) {
-                            if (which == DialogInterface.BUTTON_POSITIVE) {
-                                FirebaseAuth.getInstance().signOut();
-                                startLoginActivity();
-                            }
-                        }
-                    };
+                                @Override
+                                public void onClick(final DialogInterface dialog, final int which) {
+                                    if (which == DialogInterface.BUTTON_POSITIVE) {
+                                        FirebaseAuth.getInstance().signOut();
+                                        startLoginActivity();
+                                    }
+                                }
+                            };
 
                     AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
                     builder.setMessage("Are you sure you want to log out?")

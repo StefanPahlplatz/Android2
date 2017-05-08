@@ -8,6 +8,11 @@
         android:title="Appearance" />
 
     <header
+        android:fragment="com.android.eu.proximitymap.activities.SettingsActivity$LocationPreferenceFragment"
+        android:icon="@drawable/ic_location_on_black_24dp"
+        android:title="Location" />
+
+    <header
         android:fragment="com.android.eu.proximitymap.activities.SettingsActivity$AccountPreferenceFragment"
         android:icon="@drawable/ic_account_circle_black_24dp"
         android:title="Account" />

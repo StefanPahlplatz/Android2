@@ -29,6 +29,18 @@
         <item>270.0</item>
         <item>60.0</item>
     </string-array>
+    <string-array name="pref_location_notification_meters">
+        <item>5</item>
+        <item>10</item>
+        <item>15</item>
+        <item>20</item>
+        <item>30</item>
+        <item>50</item>
+        <item>100</item>
+        <item>150</item>
+        <item>200</item>
+    </string-array>
+
     <string name="title_activity_extra_user_details">Additional Info</string>
     <string name="title_activity_picture_picker">Choose A Profile Picture</string>
 </resources>
