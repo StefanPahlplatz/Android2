@@ -83,10 +83,8 @@ public class LocationHelper implements
     @Override
     public void onConnected(@Nullable Bundle bundle) {
         LocationRequest mLocationRequest = new LocationRequest();
-        // TODO: Make this a setting.
         mLocationRequest.setInterval(UPDATE_LOCATION_INTERVAL);
         mLocationRequest.setFastestInterval(UPDATE_LOCATION_INTERVAL);
-        // TODO: Make this a setting.
         mLocationRequest.setPriority(LocationRequest.PRIORITY_LOW_POWER);
 
         if (ContextCompat.checkSelfPermission(ctx, Manifest.permission.ACCESS_FINE_LOCATION) ==
@@ -129,7 +127,6 @@ public class LocationHelper implements
             public void onClick(DialogInterface dialog, int which) {
                 switch (which) {
                     case DialogInterface.BUTTON_POSITIVE:
-                        // TODO: handle user denying location permission.
                         break;
                 }
             }
