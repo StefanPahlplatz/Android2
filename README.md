@@ -3,7 +3,7 @@
 2. [Subtasks](#subtasks)
 3. [Extensions](#extensions)
 4. [Documentation](#documentation)
-5. [Planning](#planning-(as-decided-on-by-the-android-lecturers))
+5. [Planning](#planning-as-decided-on-by-the-android-lecturers)
 
 
 ## Requirements
