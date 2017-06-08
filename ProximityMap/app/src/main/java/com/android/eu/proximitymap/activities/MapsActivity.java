@@ -164,10 +164,6 @@ public class MapsActivity extends FragmentActivity implements
                 Log.v("NAV", "MAP");
                 return true;
 
-            case R.id.action_user:
-                Log.v("NAV", "USER");
-                return true;
-
             case R.id.action_settings:
                 Intent settingsIntent = new Intent(this, SettingsActivity.class);
                 startActivity(settingsIntent);

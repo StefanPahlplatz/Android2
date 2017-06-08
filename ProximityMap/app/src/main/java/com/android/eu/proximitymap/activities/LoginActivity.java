@@ -2,6 +2,7 @@ package com.android.eu.proximitymap.activities;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.os.Debug;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
@@ -58,6 +59,8 @@ public class LoginActivity extends AppCompatActivity {
                             new AuthUI.IdpConfig.Builder(AuthUI.EMAIL_PROVIDER).build(),
                             new AuthUI.IdpConfig.Builder(AuthUI.GOOGLE_PROVIDER).build(),
                             new AuthUI.IdpConfig.Builder(AuthUI.FACEBOOK_PROVIDER).build()))
+                    .setIsSmartLockEnabled(false)
+                    .setLogo(R.drawable.icon)
                     .build(), RC_SIGN_IN);
         }
     }
