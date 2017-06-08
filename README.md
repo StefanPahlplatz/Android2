@@ -64,7 +64,7 @@ and other users?
 - [ ] Explain clearly all the features that you added, and that were not strictly required; and which
 mark you think you deserve for the end product.
 
-## Planning
+## Planning (as decided on by the Android lecturers)
 
 | Week | Steps to do                                |                         Subresult to be shown                         |
 |------|--------------------------------------------|-----------------------------------------------------------------------|
