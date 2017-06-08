@@ -95,7 +95,13 @@ public class MapsActivity extends FragmentActivity implements
             public void onDataChange(DataSnapshot dataSnapshot) {
                 if (dataSnapshot.exists()) {
                     for (DataSnapshot snapshot : dataSnapshot.getChildren()) {
-                        markerManager.addMarker(snapshot);
+                        if (markerManager == null) {
+                            Intent intent = getIntent();
+                            finish();
+                            startActivity(intent);
+                        } else {
+                            markerManager.addMarker(snapshot);
+                        }
                     }
                 }
             }

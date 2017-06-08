@@ -43,7 +43,6 @@
             android:background="@color/colorPrimaryDark"
             android:padding="16dp"
             android:text="Choose Image"
-
             android:textColor="@color/tw__solid_white" />
 
         <Button

@@ -55,11 +55,17 @@ public class LocationService extends Service implements LocationHelper.LocationL
         RUNNING = true;
 
         // Get last position from intent.
-        double lat = intent.getExtras().getDouble("lat");
-        double lng = intent.getExtras().getDouble("lng");
+        double lng;
+        double lat;
+        try {
+            lat = intent.getExtras().getDouble("lat");
+            lng = intent.getExtras().getDouble("lng");
+            mLastLocation = new LatLng(lat, lng);
+        } catch (NullPointerException ex) {
+            mLastLocation = null;
+        }
 
         // Initialize variables.
-        mLastLocation = new LatLng(lat, lng);
         mUsersInVicinity = new ArrayList<>();
         mMinRange = Integer.parseInt(PreferenceManager.getDefaultSharedPreferences(LocationService.this)
                 .getString("notification_in_x_meters", "10"));
@@ -93,17 +99,19 @@ public class LocationService extends Service implements LocationHelper.LocationL
                         // If it's not the own user location that changed.
                         if (!loc.uid.equals(user.getUid())) {
                             // If the other user is closer than x meters.
-                            if (calc.getDistance(mLastLocation, loc.getLatLng()) < mMinRange) {
-                                // If the user wasn't in range before.
-                                if (!mUsersInVicinity.contains(loc.uid)) {
-                                    mUsersInVicinity.add(loc.uid);
-                                    vibrate();
-                                    addNotification(loc.name);
-                                }
-                            } else {
-                                // If the user left your close range, remove him from the list.
-                                if (mUsersInVicinity.contains(loc.uid)) {
-                                    mUsersInVicinity.remove(loc.uid);
+                            if (mLastLocation != null) {
+                                if (calc.getDistance(mLastLocation, loc.getLatLng()) < mMinRange) {
+                                    // If the user wasn't in range before.
+                                    if (!mUsersInVicinity.contains(loc.uid)) {
+                                        mUsersInVicinity.add(loc.uid);
+                                        vibrate();
+                                        addNotification(loc.name);
+                                    }
+                                } else {
+                                    // If the user left your close range, remove him from the list.
+                                    if (mUsersInVicinity.contains(loc.uid)) {
+                                        mUsersInVicinity.remove(loc.uid);
+                                    }
                                 }
                             }
                             Log.v(TAG + ".onDataChange", loc.toString());
