@@ -33,7 +33,7 @@ An implicit Intent has to be used for this.
 - [x] Research how the distance between two points can be calculated.
 - [x] Research how to play a sound, or generate a vibration.
 - [x] Test the app on some tablets and phones, using at least 3 different Android versions.
-- [ ] Deploy the app
+- [x] Deploy the app
 
 ## Extensions
 
@@ -52,16 +52,16 @@ compass sensor).
 
 > Documentation has to be provided, that contains the following information:
 
-- [ ] Show and explain the GUI.
-- [ ] Explain which kind of server you used, and why.
-- [ ] When one user is added (or changes position), how do you update the other users?
-- [ ] Show and explain the Database structure (how data is stored and retrieved).
-- [ ] How is the Notification done?
+- [x] Show and explain the GUI.
+- [x] Explain which kind of server you used, and why.
+- [x] When one user is added (or changes position), how do you update the other users?
+- [x] Show and explain the Database structure (how data is stored and retrieved).
+- [x] How is the Notification done?
 - [ ] Any interesting implementation details, e.g.: how do you calculate the distance between you
 and other users?
 - [ ] What kind of testing frameworks have you used and tests run?
-- [ ] How did you deploy your app?
-- [ ] Explain clearly all the features that you added, and that were not strictly required; and which
+- [x] How did you deploy your app?
+- [x] Explain clearly all the features that you added, and that were not strictly required; and which
 mark you think you deserve for the end product.
 
 ## Planning (as decided on by the Android lecturers)
