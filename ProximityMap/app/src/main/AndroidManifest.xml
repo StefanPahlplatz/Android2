@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
-    package="com.android.eu.proximitymap">
+    package="com.app.eu.proximitymap">
 
     <uses-permission android:name="android.permission.INTERNET" />
     <uses-permission android:name="com.google.android.providers.gsf.permission.READ_GSERVICES" />
@@ -62,7 +62,7 @@
             android:parentActivityName=".activities.MapsActivity">
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
-                android:value="com.android.eu.proximitymap.activities.MapsActivity" />
+                android:value="com.app.eu.proximitymap.activities.MapsActivity" />
         </activity>
         <activity
             android:name=".activities.ExtraUserDetailsActivity"
@@ -83,7 +83,7 @@
             android:theme="@style/AppTheme.NoActionBar">
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
-                android:value="com.android.eu.proximitymap.activities.MapsActivity" />
+                android:value="com.app.eu.proximitymap.activities.MapsActivity" />
         </activity>
 
     </application>

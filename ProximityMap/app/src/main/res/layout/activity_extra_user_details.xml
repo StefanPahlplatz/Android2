@@ -4,7 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context="com.android.eu.proximitymap.activities.ExtraUserDetailsActivity">
+    tools:context="com.app.eu.proximitymap.activities.ExtraUserDetailsActivity">
 
     <android.support.design.widget.AppBarLayout
         android:layout_width="match_parent"
@@ -26,7 +26,7 @@
         android:layout_height="match_parent"
         android:orientation="vertical"
         android:padding="16dp"
-        tools:context="com.android.eu.proximitymap.fragments.ExtraDetailsFragment"
+        tools:context="com.app.eu.proximitymap.fragments.ExtraDetailsFragment"
         tools:showIn="@layout/activity_extra_user_details">
 
         <android.support.design.widget.TextInputLayout

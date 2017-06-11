@@ -5,7 +5,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:layout_centerHorizontal="true"
-    tools:context="com.android.eu.proximitymap.activities.UserActivity">
+    tools:context="com.app.eu.proximitymap.activities.UserActivity">
 
     <android.support.design.widget.AppBarLayout
         android:id="@+id/appBarLayout"
