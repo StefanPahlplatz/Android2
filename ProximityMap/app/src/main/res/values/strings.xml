@@ -43,4 +43,5 @@
 
     <string name="title_activity_extra_user_details">Additional Info</string>
     <string name="title_activity_picture_picker">Choose A Profile Picture</string>
+    <string name="title_activity_user">User Details</string>
 </resources>

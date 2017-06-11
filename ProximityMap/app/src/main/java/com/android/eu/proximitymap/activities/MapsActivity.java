@@ -167,7 +167,11 @@ public class MapsActivity extends FragmentActivity implements
     public boolean onNavigationItemSelected(@NonNull MenuItem item) {
         switch (item.getItemId()) {
             case R.id.action_map:
-                Log.v("NAV", "MAP");
+                return true;
+
+            case R.id.action_user:
+                Intent userIntent = new Intent(this, UserActivity.class);
+                startActivity(userIntent);
                 return true;
 
             case R.id.action_settings:

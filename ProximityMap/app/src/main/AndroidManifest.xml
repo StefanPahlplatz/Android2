@@ -75,7 +75,17 @@
 
         <service
             android:name=".services.LocationService"
-            android:exported="false"></service>
+            android:exported="false" />
+
+        <activity
+            android:name=".activities.UserActivity"
+            android:label="@string/title_activity_user"
+            android:theme="@style/AppTheme.NoActionBar">
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value="com.android.eu.proximitymap.activities.MapsActivity" />
+        </activity>
+
     </application>
 
 </manifest>

@@ -8,9 +8,16 @@ import android.support.v7.widget.Toolbar;
 import android.util.Log;
 
 import com.android.eu.proximitymap.R;
+import com.android.eu.proximitymap.models.User;
+import com.android.eu.proximitymap.models.UserHelper;
 import com.firebase.ui.auth.AuthUI;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
 
 import java.util.Arrays;
 
@@ -45,10 +52,19 @@ public class LoginActivity extends AppCompatActivity {
         if (auth.getCurrentUser() != null) {
             // User is already signed in.
             Log.v("AUTH", "Logged in as " + auth.getCurrentUser().getEmail());
+            final DatabaseReference ref = FirebaseDatabase.getInstance().getReference("users").child(auth.getCurrentUser().getUid());
+            ref.addListenerForSingleValueEvent(new ValueEventListener() {
+                @Override
+                public void onDataChange(DataSnapshot dataSnapshot) {
+                    User user = dataSnapshot.getValue(User.class);
+                    UserHelper.setUser(user);
+                    startActivity(MapsActivity.class);
+                }
 
-            // TODO: Check if user profile data is complete, if not, start the details activity anyway.
-
-            startActivity(MapsActivity.class);
+                @Override
+                public void onCancelled(DatabaseError databaseError) {
+                }
+            });
         } else {
             // User is not yet signed in, start the FirebaseUI intent by calling
             // createSignInIntentBuilder. The response of this intent is handled

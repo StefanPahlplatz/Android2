@@ -8,6 +8,12 @@
         android:title=""
         app:showAsAction="ifRoom" />
     <item
+        android:id="@+id/action_user"
+        android:enabled="true"
+        android:icon="@drawable/ic_account_circle_black_24dp"
+        android:title=""
+        app:showAsAction="ifRoom" />
+    <item
         android:id="@+id/action_settings"
         android:enabled="true"
         android:icon="@drawable/ic_settings_black_24dp"
