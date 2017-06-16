@@ -217,9 +217,6 @@ public class MapsActivity extends FragmentActivity implements
         super.onStop();
         locationHelper.dispose();
         startLocationService();
-        // TODO: Decide on this functionality.
-        // Remove your own location entry.
-        // mDatabase.getRoot().child("locations").child(mUser.getUid()).removeValue();
     }
 
     /**
@@ -231,7 +228,9 @@ public class MapsActivity extends FragmentActivity implements
      */
     @Override
     public void onChildAdded(DataSnapshot dataSnapshot, String s) {
-        markerManager.addMarker(dataSnapshot);
+        if (markerManager != null) {
+            markerManager.addMarker(dataSnapshot);
+        }
     }
 
     /**

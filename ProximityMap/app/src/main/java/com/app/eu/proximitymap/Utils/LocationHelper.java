@@ -141,7 +141,11 @@ public class LocationHelper implements
      */
     public void dispose() {
         if (mGoogleApiClient != null) {
-            LocationServices.FusedLocationApi.removeLocationUpdates(mGoogleApiClient, this);
+            try {
+                LocationServices.FusedLocationApi.removeLocationUpdates(mGoogleApiClient, this);
+            } catch (IllegalStateException ex) {
+                Log.e("LocationHelper", "dispose: ", ex);
+            }
         }
     }
 

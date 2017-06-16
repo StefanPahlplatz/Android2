@@ -13,3 +13,5 @@ Application/app/google-services\.json
 ProximityMap/app/src/main/res/values/secretstrings\.xml
 
 *.jks
+
+ProximityMap/\.idea/

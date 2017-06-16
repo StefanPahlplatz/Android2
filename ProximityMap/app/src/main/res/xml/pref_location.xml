@@ -7,14 +7,14 @@
         android:title="Background service" />
 
     <SwitchPreference
-        android:defaultValue="false"
+        android:defaultValue="true"
         android:dependency="keep_active"
         android:key="notify_when_close"
         android:summary="Show a marker at your current location."
         android:title="Receive notifications when someone enters your proximity" />
 
     <ListPreference
-        android:defaultValue="1"
+        android:defaultValue="10"
         android:dependency="notify_when_close"
         android:entries="@array/pref_location_notification_meters"
         android:entryValues="@array/pref_location_notification_meters"
@@ -22,6 +22,5 @@
         android:negativeButtonText="@null"
         android:positiveButtonText="@null"
         android:title="Notification when closer than:" />
-
 
 </PreferenceScreen>
